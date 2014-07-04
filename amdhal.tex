@@ -1,0 +1,195 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{graphicx}
+\usepackage[ansinew]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{amsmath}
+
+\title{66:20 Organización de Computadoras\\
+       Práctica 1: Ley de Amdhal}
+\author{}
+\sloppy
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} 
+
+\begin{center}
+Complementar esta guia de ejercicios con los ejercicios 1.2, 1.3, 1.4, 1.5, 1.6, 1.17 de la edición 3 del CAAQA.
+\end{center}
+
+\hrule
+\begin{enumerate}
+
+	\item %Ejercicio 0
+		Demostrar que 
+
+						 $$ SU = \frac {1} {(1-f) + \frac {f}{SU_l}} $$
+
+
+		Donde $f$ es la fracción de tiempo a mejorar, y $SU_l$ es la mejora local.
+
+  		
+  \item %Ejercicio 1
+   El siguiente es el algoritmo de Booth, utilizado para realizar multiplicaciones binarias de X * Y utilizando sumas, restas y 
+   desplazamientos a derecha:
+
+   \begin{enumerate}
+    \item \begin{math} A=0, Q=X, Q_{-1}=0, M=Y \end{math}
+    \item For I = 1 to n do
+          \begin{enumerate}
+           \item \begin{math} if\; Q_{0}Q_{-1} = 01\; then\; A=A + M \end{math}
+	   \item \begin{math} if\; Q_{0}Q_{-1} = 10\; then\; A=A - M \end{math}
+           \item \begin{math} Arithmetic\; Right\; Shift\; (A || Q)\end{math}
+           \end{enumerate}
+   \end{enumerate}
+   La respuesta es almacenada en la combinación de  \begin{math}(A || Q)\end{math}
+
+   El 5\% de todas las instrucciones de un \textit{benchmark} son multiplicaciones binarias de 32 bits (sin ocurrir otras multiplicaciones).
+   Cuánto más rápida debe ser la máquina con una unidad de multiplicación por hardware que otra máquina que debe realizar la multiplicación
+   utilizando el algoritmo de Boot?
+   
+   Asumir que cada instrucción (línea) en el algoritmo toma 1 ciclo de reloj (incluyendo el for y cada if).
+   
+   Asumir que la máquina que realiza la multiplicación binaria utilizando el hardware dedicado tiene un CPI de 15.
+
+    %Respuestas 
+
+    %The frequency of the enhancement (the multiplication circuit) is 5%
+    %The machine that uses Booth?s algorithm to perform multiplication executes 1 + 4 * 32 instructions (at one cycle each) or has a 129 cycle multiply	
+    %The machine with the hardware multiplier takes 15 cycles per multiple
+    %The speedup in the enhanced mode is then 129 / 15 = 8.6
+     %Speedup = 1 / ((1-0.05) +(0.05/8.6)) = 1 / 0.955 = 1.047 = 4.7% de Speedup
+    %Key idea: Amdahl?s law quantifies the general notion of diminishing returns. It applies to any activity, not just computer programs.
+
+	\vfill
+
+
+  \item %Ejercicio 2
+    Un procesador de $300 Mhz$ ejecuta un programa que presenta los siguientes tipos de instrucciones:
+\begin{center}
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		Tipo de instrucción Frecuencia & (\%) & Ciclos \\ \hline
+		Aritmético-Lógica  &             40   & 1 \\ \hline
+		Carga              &             20   & 1 \\  \hline
+		Almacenamiento     &             10   & 2 \\ \hline
+		Saltos             &             20   & 3 \\ \hline
+		Punto Flotante     &             10   & 5 \\ \hline
+    \end{tabular}
+\end{center}
+               
+		
+			
+    \begin{enumerate}
+     \item  Calcular las tasas de CPI y MIPS, para el programa completo.
+     \item Suponga que una optimización elimina un 30\% de las instrucciones aritmético-lógicas (o sea, 12\% del total de instrucciones A-L), 
+       30\% de instrucciones load y 20\% de punto flotante. ¿Cuál es el speedup alcanzado?
+     \item Recalcular las tasas de CPI y MIPS para el programa completo. Explicar las diferencias respecto al punto (a).
+    \end{enumerate}
+    % RESPUESTA
+    %  a.
+    %    SE ASUME QUE EL PROG TIENE UNA CANT IC DE INTRUCCIONES
+    %    CPI =( 0,4.Ic.1 + 0,2.Ic.1 + 0,1.Ic.2 + 0,2.Ic.3 + 0,1.Ic.5 )/ Ic = 1,9
+    %    MIPS = Ic/(Tej.10^6) = Ic / ( (CPI.IC/300Mhz).10^6 ) = 300/1,9 = 158
+    %   
+    %  b.
+    %  Se reducen en un % ciertas instrucciones => Sp Glob???
+    %  Arit Log -30% -> 0,4-0,3.0,4 = 0,28
+    %  Load     -30% -> 0,2-0,3.0,2 = 0,14
+    %  Store     -
+    %  Branch    -
+    %  Pf       -20% -> (0,1-0,2.0,1)= 0,08
+    
+    % SUglobal = Tviejo/Tnuevo = CPIv.Icv/300  / CPIn.Icn/300 = 1,17
+    %                                              ^- misma formulita de CPI que a. => 2,03 (2,025)
+    % 
+    %  c.
+    %  MIPS = ICn/ ((CPIn.ICn/300).10^6 ) = 148 
+
+\item %Ejercicio 3
+
+  [H.P. AQA 1.16] Se proponen 3 mejoras para una nueva arquitectura con los siguientes SpeedUps:
+
+  \begin{itemize}
+   \item Speedup1 = 30
+   \item Speedup2 = 20
+   \item Speedup3 = 10
+  \end{itemize}
+    
+   Sólo una mejora es aplicable en cada momento (no se pueden solapar)
+  \begin{enumerate}
+     \item Si las mejoras 1 y 2 se pueden usar un 30\% del tiempo, que
+           fracción del tiempo se debe usar la mejora 3 para lograr un 
+           speedup global de 10?
+     \item Asumir que la distribución del uso de las mejoras es del 
+           30\%, 30\% y 20\ para las mejoras 1,2 y 3 respectivamente. 
+           Asumir que las 3 mejoras están en uso. Qué fracción
+           del tiempo mejorado no tiene una mejora en uso?
+     \item Asumir que para un \textit{benchmark}, la fracción del uso de las
+           mejoras es del 15\% para 1 y 2 y del 70\% para la mejora 3. Se quiere
+           maximiar la \textit{performance}. Si sólo una mejora puede ser aplicada,
+           cuál debería ser elegida? Si 2 mejoras pueden ser aplicadas, cuales deberían ser elegidas?
+   \end{enumerate}
+
+    %Respuestas
+    % a)
+    %Amdahl?s Law can be generalized to handle multiple enhancements. 
+    %If only one enhancement can be used at a time during program execution, then 
+    %Speedup = 1 / ( ( 1 - SUM(Fri) + SUM(Fri/Supi))
+    %where Fris the fraction of time that enhancement i can be used and SEiis the speedup of enhancement i. 
+    %For a single enhancement the equation reduces to the familiar form of Amdahl?s Law. With three enhancements we have
+    % Speedup = 1 /((1-(Fr1+Fr2+Fr3) + (Fr1/Sp1 + Fr2/Sp2 + Fr3/Sp3))
+    %Substituting in the known quantities gives 
+    % 10= 1 / (1-(0.3+0.3+FE3) + (0.3/30 + 0.3/20 + FE3/10))  = 0.36
+
+    % b)
+    %  Tnomejorado   Sp1 30%  Sp2 30%    Sp3 10%
+    % |------------|---------|--------|--------|
+    % Tnomejorado = 1 -(0.3 + 0.3 + 0.2) = 0.2
+    % Antes del SpeedUp, el tiempo total antes de la mejora debe ser:
+    % T total = Tnomejorado + (0.3/30 + 0.3/20 + 0.2/10) = 0.245
+    % Fracción del tiempo no mejorado:
+    % Tmejorado / Ttotal = 0.2/0.245 = 82%
+
+    % c)
+    %  Let Te and TNEedenote execution time with enhancements and the time during enhanced execution in which no enhancements are in use,
+    % respectively.
+    %Let Toriginaland FNEoriginalstand for execution time without enhancements Speedup and the fraction of that time that cannot be 
+    %enhanced. Finally, let FNEerepresent the fraction of the reduced (enhanced) execution time for which no enhancement is in use. 
+    %Bydefinition,
+    %Because the time spent executing code that cannot be enhanced isthe same whether enhancements are in use or not, and by Amdahl?s
+    % Law, we have
+    % FNEe = TNEe / Te         TNEe/Te = (FNEoriginal * Torginal) / (Toriginal / Speedup )
+    % Canceling factors and substituting equivalent expressions for FNEoriginaland Speedup yields
+    % ( FNEoriginal x Toriginal ) / ( Toriginal /Speedup) =  ( 1 - SUM(FEi) ) / ( 1 - SUM(FEi) + SUM(FEi)/SUM(SEi) )
+
+	\vfill
+\item %Pregunta 5
+
+	[H.P. AQA 1.7] Se dispone de un benchmark que contiene $195,578$ instrucciones de punto flotante.
+	
+	Dicho Benchmark fue ejecutado en un procesador embebido luego de haber sido compilado con las optimizaciones activadas. El procesador embebido está basado en un procesador RISC que incluye unidades de punto flotante, pero el procesador embebido no dispone de ellas por distintas razones. El compilador permite calcular las operaciones de punto flotante mediante unidades punto flotante o mediante rutinas de software, dependiendo en las opciones utilizadas.
+	
+	El benchmark se ejecutó en $1,08$ segundos en el procesador RISC, mientras que tomó $13.6$ segundos en la versión embebida. Asumir que el CPI del procesador RISC es $10$, mientras que el CPI del procesador embebido es $6$.
+	
+	\begin{enumerate}
+	\item Para ambos procesadores, ¿cuantas instrucciones fueron ejecutadas?
+	\item Para ambos procesadores, ¿cual es el valor de la tasa de MIPS?
+	\item En promedio, ¿cuantas instrucciones enteras son necesarias para ejecutar una operación de punto flotante en software?
+	\end{enumerate}
+	
+	Responder considerando que el benchmark puede estar conformado por 
+	
+	\begin{itemize}
+		\item Un $100\%$ de instrucciones de punto flotante.
+		\item Instrucciones de punto flotante y enteras.
+	\end{itemize}
+	
+\end{enumerate}
+\end{document}

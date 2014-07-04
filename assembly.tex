@@ -1,0 +1,363 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{graphicx}
+\usepackage[ansinew]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{url}
+
+\title{66:20 Organización de Computadoras\\
+        Principios de conjuntos de instrucciones / Assembly MIPS}
+\author{}
+\sloppy
+\date{}
+
+\begin{document}
+
+\maketitle
+\begin{center}
+Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12, 2.13*, 2.14, 2.18, 2.19  de la edición 3 del CAAQA.
+\end{center}
+
+\hrule
+
+\thispagestyle{empty} 
+
+\begin{enumerate}
+  \item %Ejercicio 1
+	  Pasar el siguiente código C a MIPS.
+		\begin{small}
+			\begin{verbatim}
+				Asumir que las seis variables (f,g,h,i,j,k) corresponden a seis registros 
+				($s0,$s1,$s2,$s3,$s4,$s5), y existe una variable $t2=4.
+				 
+				switch (k) {
+					case 0:
+				             f = i + j; break; 
+					case 1:
+				             f = g + h; break;
+					case 2:
+				             f = g - h; break; 
+					case 3:
+				             f = i - j; break; 
+				}
+			\end{verbatim}
+		\end{small}
+		\textit{Pista: usar la variable k para indexar una tabla de saltos, y luego 
+		saltar a dichos valores.
+		Primero verificar que el valor k se corresponda con una de las opciones posibles
+		(0 \(<=\) k \(<=\) 3 ). Si no, salir.}
+		
+		
+		%RESPUESTA:
+		
+%		.data
+%		TablaSaltos:
+%		.word L0, L1, L2, L3
+%		.text
+%	
+%		slt $t3, $s5, $zero 		# Probar k < 0
+%		bne $t3, $zero, Salida 		# Si es, Salida
+%		slt $t3, $s5, $t2 		# Probar k < 4
+%		beq $t3, $zero, Salida 		# Si no, Salida
+%		sll $t1, $s5, 2 		# $t1 = 4*k
+%		li $t4, TablaSaltos		# Carga en $t4 el valor TablaSaltos
+%		add $t1, $t1, $t4 		# $t1 = &TablaSaltos[k]
+%		lw $t0, 0($t1) 			# $t0 = TablaSaltos[k]
+%		jr $t0 				# jump register
+%	
+%	L0: 	add $s0, $s3, $s4 		# k == 0
+%		j Salida 			# break
+%	L1: 	add $s0, $s1, $s2	 	# k == 1
+%		j Salida 			# break
+%	L2: 	sub $s0, $s1, $s2 		# k == 2
+%		j Salida 			# break
+%	L3: 	sub $s0, $s3, $s4	 	# k == 3
+%		j Salida 			# break
+		
+		
+		
+  \item %Ejercicio 2
+  
+  [2.12 de H.P AQA]\\
+  
+		  \begin{small}
+			\begin{verbatim}                                   
+			Instruction     gap    gcc    gzip   mcf    perl   I. average
+			load           44.7%   35.5%  31.8%  33.2%  41.6%   37%
+			store          10.3%   13.2%  5.1%   4.3%   16.2%   10%
+			add             7.7%   11.2%  16.8%  7.2%   5.5%    10%
+			sub             1.7%   2.2%   5.1%   3.7%   2.5%    3%
+			mul             1.4%   0.1%                         0%
+			compare         2.8%   6.1%   6.6%   6.3%   3.8%    5%
+			cond branch     9.3%   12.1%  11.0%  17.5%  10.9%   12%
+			cond move       0.4%   0.6%   1.1%   0.1%   1.9%    1%
+			jump            0.8%   0.7%   0.8%   0.7%   1.7%    1%
+			call            1.6%   0.6%   0.4%   3.2%   1.1%    1%
+			return          1.6%   0.6%   0.4%   3.2%   1.1%    1%
+			shift           3.8%   1.1%   2.1%   1.1%   0.5%    2%
+			and             4.3%   4.6%   9.4%   0.2%   1.2%    4%
+			or              7.9%   8.5%   4.8%   17.6%  8.7%    9%
+			xor             1.8%   2.1%   4.4%   1.5%   2.8%    3%
+			other logical   0.1%   0.4%   0.1%   0.1%   0.3%    0%
+			load FP                                             0%
+			store FP                                            0%
+			add FP                                              0%
+			sub FP                                              0%
+			mul FP                                              0%
+			div FP                                              0%
+			mov reg-reg FP                                      0%
+			compare FP                                          0%
+			cond mov FP                                         0%
+			other FP                                            0%
+			\end{verbatim}
+			\end{small}
+		
+			Considerar el agregado de un nuevo modo de acceso a MIPS.
+			El nuevo modo suma dos registros y un valor de offset de 11 bits con signo para obtener
+			la dirección efectiva. Utilizar el porcentaje de instrucciones indicado en la tabla anterior.
+			\vspace{3mm}
+
+			El compilador pasa de las instrucciones: 
+			\begin{verbatim}
+			    add R1, R1, R2
+			    lw  Rd, 100(R1) #(o store)
+			\end{verbatim}
+			\vspace{1.5mm}
+
+			A utilizar:
+			\begin{verbatim}
+			    lw	Rd, 100(R1,R2)
+			\end{verbatim}
+			
+			\subitem a.	Asumir que el nuevo modo de acceso es usado por el 10\% de los loads y stores.
+			        ¿Cual es el porcentaje de Ic nuevo comparado con la tasa original?
+			
+			\subitem b.	Si el nuevo modo de direccionamiento aumenta en 5\% el tiempo de clock, ¿Cuál
+			       computadora será más rápida y por cuanto?
+			       
+			       
+			 %RESPUESTA
+%			 
+%			 a)
+%
+%				load/store = 47%
+%				add = 10%
+%				La nueva instrucción se usa para el 10% de los load/store, con lo cual:
+%			
+%				load/store|new = 0.1 x 0.47 x 100 = 4.7%
+%			
+%				El conteo total de load/store no cambia, porque cada una de estas
+%				instrucciones reemplaza a 1 load/store. Pero desaparecen los add's
+%				asociados a estos load/store. La cantidad de add's que desaparecen son
+%				justamente IC|new_ins (cada vez que reemplazo el par de instrucciones
+%				add+load/store, queda una sola instruccion load/store con el add
+%				incluido).
+%			
+%				Del porcentaje total de instrucciones, seria:
+%			
+%				IC_new = IC_old - IC|new_ins = 1 - 0.047 * 100 = 95,3%
+%			
+%				La cantidad de estas instrucciones es IC|new_ins = IC_old x 0.047
+%				
+%			
+%				b) El Tck aumenta en un 5%. Esto puede deberse a que el computo de la
+%				direccion efectiva para las nuevas instrucciones toma mas tiempo, por
+%				haber mas operandos involucrados.
+%				
+%				Tck_new = Tck_old x 1.05
+%			
+%				T = IC x CPI x Tck
+%			
+%				T_new = (IC_old x 0.953) x CPI_new x (Tck_old x 1.05)
+%			                
+%			             (es Tn/Tv por que se que me da peor)
+%			  	Speedup = T_new / T_old = (IC_old x 0.953 x CPI_new x Tck_old x 1.05) /
+%				                          (IC_old x CPI_old x Tck_old)
+%							= 1.00065 x CPI_new / CPI_old
+%				
+%				Si CPI no cambia, el conteo de instrucciones se reduce, pero igual
+%				aumenta el tiempo de ejecucion. Sin embargo es de esperarse que cambie
+%				el CPI, puesto que para un programa dado, cambia la secuencia de
+%				instrucciones que se procesan el pipeline, con lo cual en un caso real,
+%				el resultado es incierto con estos datos.
+%						       
+			       
+  \item %Ejercicio 3
+  Codificar una función que tome una linea de texto y retorne el entero correspondiente.
+  \begin{verbatim}
+	int atoi(const char *s)
+  \end{verbatim}
+ 	
+  \pagebreak
+     
+  \item %Ejercicio 4  
+  Codificar en Assembly MIPS y diagramar el stack de las siguientes funciones.
+	\begin{small}
+			\begin{verbatim}
+			
+			void proc(int i){
+			  int j;
+			  j = i+20; 
+			} 
+
+			int main(int argc, char** argv){
+			    int i=10; 
+			    proc(i); 
+			    return 0; 
+			} 
+			
+	\end{verbatim}
+  \end{small}
+  
+  
+  
+  
+  %RESPUESTA
+%  .text
+% .globl main 
+%	main: 
+%  subu $sp,$sp,48          # stack
+%   sw $ra,40($sp)           # (almacena i y argumentos de main)
+%   sw $fp,36($sp) 
+%   sw $gp,32($sp) 
+%   move $fp,$sp   
+%   sw $a0,48($fp)            # el callee (main) almacena sus args 
+%   sw $a1,52($fp)            # fuera del stack frame (pegados a el) 
+%   li $v0,10                     # i = 10; 
+%   sw $v0,24($fp)           #valor de retorno de proc(i)
+%   lw $a0,24($fp)            # proc(i); 
+%   la $t9,proc                 # cargo el identificador proc
+%   jal $ra,$t9                  # llamada a la funcion
+%   move $v0,$zero         # return 0; 
+%   move $sp,$fp             # destruye stack frame 
+%   lw $ra,40($sp) 
+%   lw $fp,36($sp) 
+%   addu $sp,$sp,48 
+%   j $ra 
+%
+%	.globl proc 
+%	
+%	proc: 
+%		subu $sp,$sp,24         # crea stack frame 
+%		sw $fp,20($sp)           # necesita almacenar j 
+%		sw $gp,16($sp) 
+%		move $fp,$sp 
+%		sw $a0,24($fp)         # callee (main) almacena argumento 
+%		                               # fuera del stack frame 
+%		lw $v0,24($fp)          # j = i + 20 
+%		addu $v0,$v0,20 
+%		sw $v0,8($fp)            # (j -> 8($fp)) 
+%		move $sp,$fp            # destruye stack frame 
+%		lw $fp,20($sp) 
+%		addu $sp,$sp,24 
+%		j $ra 
+
+  
+  
+  \item %Ejercicio 5
+  Codificar en Assembly MIPS y diagramar el stack de la siguiente función.
+		\begin{small}
+			\begin{verbatim}
+				unsigned int
+				factorial (unsigned int n)
+				{
+				    if (n < 2)
+				        return 1;
+				    else 
+				        return n*factorial(n-1);
+				}
+			\end{verbatim}
+		\end{small}
+  
+  \item %Ejercicio 6
+  Codificar en C  y Assembly MIPS una función que reciba calcule la longitud de un C-string\\
+  \begin{verbatim}
+  size_t strlen(const char *s)
+  \end{verbatim}
+
+
+  \item%
+  Codificar en C y Assembly MIPS una función que transpone una matriz cuadrada de enteros de $n x n$
+
+  \begin{verbatim}
+	void mat_transp(int *m, size_t n);
+  \end{verbatim}
+
+  \item
+  Codificar en C y Assembly MIPS una función que indique si un número es primo o no.
+
+  \begin{verbatim}
+	int prime(unsigned int n);
+  \end{verbatim}
+	 
+
+   \vfill
+
+  \item
+  Codificar en Assembly MIPS una solución al problema de Las Torres de Hanoi\footnote{\url{http://en.wikipedia.org/wiki/Tower_of_Hanoi}}
+
+  \begin{verbatim}
+    void
+    hanoi(int n, int start, int finish, int extra)
+    {
+	    if (!n) return;
+
+       hanoi(n-1, start, extra, finish);
+       hanoi(n-1, extra, finish, start);
+    }
+
+  \end{verbatim}
+  
+ %RESPUESTA Ej 5
+ 
+%		 #include <mips/regdef.h>
+%		
+%			.text
+%			.ent factorial
+%			.globl factorial
+%			
+%		factorial:	
+%		
+%			.frame 	$fp,40,ra
+%		
+%			subu 	sp,sp,40 	#Stack frame creation
+%		
+%			.cprestore 24		#Saved register area. 
+%			sw	ra,32(sp)
+%			sw	$fp,28(sp)	
+%			move	$fp,sp
+%		
+%			sw	a0,40($fp)	#Argument Building Area
+%			sw	a0,16($fp)	#Local and Temporary Area.
+%						
+%			lw	t0,16($fp)
+%			li	t1,2
+%			bltu	t0,t1,$ret1
+%		
+%		
+%		$rec:	lw	t0,16($fp)	#n>=2
+%			subu	t0,t0,1
+%			sw	t0,16($fp)
+%			addu	a0,t0,zero
+%			jal	factorial	#factorial(n-1)
+%			
+%			lw	t0,40($fp)	
+%			mul	v0,v0,t0	
+%			b	$fin
+%		
+%		$ret1:	li	v0,1		#return 1
+%		
+%		$fin:	lw	ra,32(sp)
+%			lw	$fp,28(sp)
+%			addu	sp,sp,40
+%		
+%			jr	ra
+%			.end 	factorial  
+%
+
+\end{enumerate}
+
+\end{document}
+

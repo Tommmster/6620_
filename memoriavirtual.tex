@@ -1,0 +1,635 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage[ansinew]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{lastpage}
+ \usepackage{epsfig}
+
+\addtolength{\hoffset}{-2.5cm}
+\addtolength{\voffset}{-1.75cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{25cm}
+
+
+\title{66:20 Organización de Computadoras\\
+       Práctica 4: Memoria Virtual}
+\author{}
+\sloppy
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} 
+
+  \begin{enumerate}
+    
+    \item %Ejercicio 1
+    Se tiene una arquitectura con las siguientes caracterí­sticas:
+
+    \begin{itemize}
+      \item Caché 4WSA de 32KB y 128 conjuntos virtualmente direccionado.
+      \item Direcciones virtuales de 48 bits.
+    \end{itemize}
+    \begin{enumerate}
+      \item Indicar el tamaño en bits que tendrá el arreglo de Tags dentro del caché.
+      \item Idem, pero cache fully-associative de 32KB y lí­neas del mismo tamaño.
+    \end{enumerate}
+
+    (tener en cuenta sólo los tags, no contabilizar otros bits como valid, dirty, etc.)
+
+    %% Rta:
+    %% Line size = 32768B/(4*128) = 64B
+    %% Each tag has = 48 - 7 (index) - 6 (offset) = 35 bits
+    %% Total tag array for 4 ways = 35 * 128 * 4 = 17920 bits = 2240 Bytes = 2,1875 KBytes
+
+    %% For a fully associative cache, there is one single set, thus it has 32768B/64B = 512 ways
+    %% Each tag has = 48 - 6 = 42 bits
+    %% Total tag array for such a cache = 42 * 512 = 21504 bits = 2688 bytes = 2.625 KB
+
+    \item %Ejercicio 2
+    Se tiene un sistema de memoria virtual con una tabla de páginas lineal
+    y páginas de 16 bytes. El total de memoria fí­sica es de 4096 bytes (es
+    decir, direcciones fí­sicas de 12 bits). Sin embargo, cada proceso tiene
+    acceso sólo a 256 bytes (i.e., direcciones virtuales de 8 bits). Un
+    volcado de una porción fí­sica de memoria es el del cuadro
+    \ref{t_vm_dump}, junto con la tabla de páginas del cuadro
+    \ref{t_vm_pgt}:
+
+    \begin{table}[ht]
+      \begin{center}
+      \begin{tabular}{c cccccccccccccccc}Physical Address & \multicolumn{16}{c}{Data (bytes)} \\ \hline
+      080 & 2A & 1B & 0C & 3D & 5A & 02 & 13 & 12 & 22 & 13 & 4A & 0B & 10 & 21 & 21 & 12 \\
+      090 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      0A0 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      0B0 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      0C0 & 02 & 1B & A1 & 2C & 11 & 31 & 22 & 33 & 11 & 12 & 14 & 2B & 11 & 2B & 15 & 13 \\
+      0D0 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      0E0 & 02 & 01 & 03 & 04 & 11 & 01 & 01 & 0B & 11 & 10 & 12 & 13 & 00 & 03 & 11 & 0B \\
+      0F0 & 00 & 00 & 01 & 10 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      100 & 1A & 2B & 3C & 4D & 5E & 01 & 10 & 02 & 20 & 03 & 40 & 0A & 11 & 22 & 01 & 10 \\
+      110 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      120 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      130 & 01 & 1A & A0 & 2B & 10 & 21 & 12 & 13 & 01 & 02 & 04 & 2A & 01 & 1B & 02 & 03 \\
+      140 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      150 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+      160 & 01 & 01 & 02 & 03 & 10 & 01 & 02 & 0A & 10 & 11 & 02 & 03 & 00 & 02 & 10 & 0A \\
+      170 & 01 & 02 & 02 & 01 & 01 & 02 & 03 & 04 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00
+      \end{tabular}
+      \caption{volcado de memoria (todos valores hexa)}
+      \label{t_vm_dump}
+    \end{center}
+    \end{table}
+\pagebreak
+    \begin{table}[h]
+    \begin{center}
+    \begin{tabular}{c|c}VPN & PPN \\ \hline
+    0 & 08 \\
+    1 & 09 \\
+    2 & 0A \\
+    3 & 0B \\
+    4 & 0C \\
+    5 & 0D \\
+    6 & 0E \\
+    7 & 0F \\
+    8 & 10 \\
+    9 & 11 \\
+    A & 12 \\
+    B & 13 \\
+    C & 14 \\
+    D & 15 \\
+    E & 16 \\
+    F & 17
+    \end{tabular}
+    \caption{Tabla de Páginas}
+    \label{t_vm_pgt}
+    \end{center}
+    \end{table}
+
+    \begin{enumerate}
+    \item Indicar cuál es la dirección fí­sica correspondiente a la dirección virtual 0x70.
+	    %% 70 = page 7 = 0F, offset 0, so the answer is 0F0
+
+    \item ¿Cuál es el valor del byte en la dirección virtual 0xc1?
+	    %% 00
+
+    \item ¿Cuál es el valor hexadecimal del entero de 32 bits en la dirección virtual 0xec? ¿Qué suposición tiene que hacer?
+	    %% 0x0002100a (big endian), 0x0a100200 (little endian)
+    \end{enumerate}
+
+    \item %Ejercicio 3
+    En este problema, examinaremos las tablas de paginación en
+    procesadores con direccionamiento de 64 bit.
+
+    \begin{enumerate}
+    \item	Para una computadora con direcciones virtuales de 64 bit,
+	    con una tabla de paginación plana (i.e. no jerárquica),
+	    ¿Qué tan grande es la tabla de paginación? Suponer que el
+	    tamaño de página es 4KB, que cada entrada en la tabla 
+	    ocupa 8 bytes, y que el procesador permite accesos de byte
+	    a la memoria.
+	%RESPUESTA
+
+	%2.a Como la tabla es lineal, va a tener una entrada por cada VPN.
+	%Entonces, #PTEs = 2^64 / 2^12 (4K) = 2^52. Luego, el tamaño de la tabla
+	%de paginación, es 2^52 * 8 = 2^55 bytes = 32768 Terabytes.
+	%
+
+    \item	Actualmente, ciertas ISAs de 64 bit implementan sólo una
+	    parte del espacio de direcciones. Una forma de lograrlo, es
+	    segmentando el espacio en tres partes: stack, código y heap,
+	    y una tercer área, reservada.
+
+	    Además, antes de procesar la dirección, el sistema de memoria
+	    virtual usa un circuito para detectar si los 8 bits más significativos de una
+	    dirección son todos cero o todos uno. De no ser así­ (i.e.,
+	    algunos cero y otros uno), se genera un trap para indicar que
+	    la dirección es inválida. En efecto, este esquema elimina los
+	    7 bit más significativos de la dirección virtual, pero permite
+	    implementar un esquema compatible con diseños futuros, y con
+	    espacios de direccionamiento virtual más grandes.
+
+	    El procesador MIPS R10000 hace algo similar: como las 
+	    direcciones de 64 bit son innecesariamente grandes, sólo los
+	    44 bits menos significativos son traducidos. Esto, a su vez,
+	    permite reducir el costo del TLB, y del procesamiento de los
+	    tags en el cache. Los dos bits más significativos (63:62),
+	    permiten seleccionar entre los espacios de usuario, supervisor,
+	    y kernel. Los bits intermedios 61:44 deben ser todos uno o
+	    todos cero, dependiendo de la región particular.
+
+	    Para un procesador R10000, ¿qué tan grande será la tabla de
+	    paginación en un esquema no jerárquico? Nuevamente, suponer que
+	    cada página mide 4KB, que cada PTE ocupa 8 bytes, y que el
+	    procesador permite accesos de byte a memoria.
+
+	%2.b Existen al menos dos formas de encarar este punto. La primera
+	%(y la que quizás sea la forma más correcta), es suponer que cada
+	%espacio de direcciones de 2^44 bytes (kernel, supervisor, usuario) 
+	%va a tener su propia tabla de paginación. Entonces, para cada uno
+	%de estos espacios:
+	%
+	%=> #PTEs = 2^44 / 2^12 = 2^32 = 4 GiPTEs.
+	%=> el tamaño de cada tabla de traducción es 32 Gibytes.
+	%=> el tamaño combinado de las tres tablas es 96 Gibytes.
+	%
+	%La otra forma de encarar este punto, será suponiendo que existe una
+	%única tabla unificada para los tres espacios. El problema que tiene
+	%esto es que, para que esto sea realizable, habrá por ejemplo que
+	%incluir bits de protección en los PTEs, lo cual será altamente 
+	%redundante, ya que los espacios son mutuamente disjuntos.
+	%
+
+
+    \pagebreak
+    \item	Mediante un esquema jerárquico, es posible reducir el tamaño de
+	    las tablas de paginación. Supongamos particionar los 44 bit
+	    efectivos de la direcciónes virtuales, de la siguiente forma:
+
+	    \begin{figure}[ht]
+	    \centering
+	    \includegraphics[width=0.45\textwidth]{./gfx/vaddr}
+	    \caption{Composición de las direcciones virtuales (4KB).}
+	    \label{fig::vaddr4k}
+	    \end{figure}
+
+	    Definiendo el overhead de traducción (PTO), como el cociente
+	    entre (numerador) la cantidad de memoria fí­sica usada para
+	    almacenar las tablas de paginación, y (denominador) la cantidad
+	    de memoria fí­sica dedicada a páginas de código y datos de 
+	    usuario, ¿cuál es el menor PTO posible en un esquema jerárquico
+	    de tres niveles? ¿Cuál es el mayor valor del PTO? Suponer que
+	    existe suficiente memoria fí­sica, como para que no haya swap de
+	    páginas a disco; y usar PTEs de 64 bit. Además, a los efectos 
+	    del cálculo, considerar que el contenido completo de la página
+	    alocada es útil.
+	  %2.c 
+	  %
+	  %Para plantear el máximo, consideramos el caso en el cual cada una
+	  %de las tablas L3, tiene una sola entrada usada (i.e. suponemos que 
+	  %el sistema operativo se encarga de detectar y liberar las tablas 
+	  %L3 que no tengan elementos válidos).
+	  %
+	  %Entonces, si n2 es la cantidad de tablas de nivel 2; también habrá
+	  %n2 tablas de nivel L3 (porque estamos buscando el máximo valor 
+	  %posible de PTO). Por lo dicho antes, cada una de estas n2 tablas L3,
+	  %tendrá un sólo PTE usado:
+	  %
+	  %PTOmax(n2) = (4 pag + n2 * 4 pag + n2 * 2 pag) / (n2 * 1 pag);
+	  %
+	  %Graficando PTOmax en función de n2, podemos ver que se trata de
+	  %una función monótonamente decreciente. Les dejo los primeros 10
+	  %valores como referencia. Ahí­ se puede ver, que el máximo se dá sobre
+	  %el comienzo:
+	  %
+	  %$ perl -le 'for ($n2 = 1; $n2 < 10; ++$n2) { 
+	  %>                   printf "PTOmax(n2 = %d): %.1f\n", 
+	  %>                          $n2, 
+	  %>                          (4 + $n2 * 4 + $n2 * 2) / ($n2); 
+	  %>           }'
+	  %PTOmax(n2 = 1): 10.0
+	  %PTOmax(n2 = 2): 8.0
+	  %PTOmax(n2 = 3): 7.3
+	  %PTOmax(n2 = 4): 7.0
+	  %PTOmax(n2 = 5): 6.8
+	  %PTOmax(n2 = 6): 6.7
+	  %PTOmax(n2 = 7): 6.6
+	  %PTOmax(n2 = 8): 6.5
+	  %PTOmax(n2 = 9): 6.4
+	  %
+	  %=> PTOmax = (4 pag + 4 pag + 2 pag) / (1 pag) = 10;
+
+	  %Para plantear el menor PTO, observamos que, en este caso, vamos a
+	  %querer despercidiar la menor cantidad de PTEs posible: por ende,
+	  %cada uno de los 1024 PTEs de nivel 3 deberá estar apuntando a una
+	  %página de memoria del programa. Similarmente, buscamos que cada uno
+	  %de los PTEs L1 y L2 no estén desperdiciados. Entonces:
+	  %
+	  %PTEmin = (4 pag + 2048 * 4 pag + 2048 * 2048 * 2 pag) 
+	  %       / (2048 * 2048 * 1024 pag);
+	  %
+	  %=> PTEmin =~ 0.002
+	  %
+    \item	
+
+	    MIPS R10000 usa direcciones fí­sicas de 40 bit. La sección de
+	    traducción de la TLB contiene el número de página fí­sica 
+	    (\verb|PFN|), un bit \verb|V| para indicar si la entrada es
+	    válida, un bit \verb|D| (dirty) para indicar que la página
+	    necesita ser procesada debido a que fue modificada, y tres bits
+	    de estado.
+
+	    ¿Cuál es el tamaño mí­nimo de la PTE, suponiendo páginas de 4KB?
+
+    %2.d Con 2^40 bytes fí­sicos, tenemos 2^28 páginas fí­sicas. Luego,
+    %necesitaremos 28 bits para representar el PPN dentro de cada PTE.
+    %
+    %=> longitud de cada PTE = 28 + 2 + 3 = 33 bit
+    %
+
+    \item	MIPS/Linux almacena cada PTE en una palabra de 64 bit. Usando
+	    la respuesta a la última pregunta, ¿cuántos bits serán
+	    desperdiciados?
+
+    %2.e Se desperdician 31 bit.
+    %
+    \item	\label{asdf}
+
+	    El siguiente comentario, extraí­do de una versión de Linux/MIPS,
+	    describe la jerarquía de tres niveles:
+
+	    \begin{verbatim}
+		/*
+		  * Each address space has 2 4K pages as its page directory, giving
+		  * 1024 8 byte pointers to pmd tables. Each pmd table is a pair of
+		  * 4K pages, giving 1024 8 byte pointers to page tables. Each (3rd
+		  * level) page table is a single 4K page, giving 512 8 byte ptes.
+		  */
+	    \end{verbatim}
+
+	    Completar el cuadro \ref{tbl::answer}, suponiendo páginas de
+	    4KB.
+
+	    \begin{table}
+	    \begin{center}
+	    \begin{tabular}{|l|l|}
+	    \hline
+	    \textbf{Index} & \textbf{Longitud en bits}\\ \hline
+	    Top-level      & \,                       \\ \hline
+	    $2^{nd}$-level & \,                       \\ \hline
+	    $3^{rd}$-level & \,                       \\ \hline
+	    \end{tabular}
+	    \caption{ver ejercicio \ref{asdf}.}
+	    \label{tbl::answer}
+	    \end{center}
+	    \end{table}
+    %2.f Según el comentario del enunciado, hay 1024 slots en L1 y L2;
+    %y cada tabla L3 tiene 512 PTEs. Luego,
+    %
+    % Index   Long (bit)
+    %-------+------------
+    %  L1   | 10
+    %  L2   | 10
+    %  L3   | 9
+    %
+    \item	Durante el diseño de un cache 4-way set associative, Raúl R.
+	    nota que el cache sufrirá un problema de aliasing homónimo:
+	    tal problema sucede cuando dos procesos usan la misma dirección
+	    virtual para acceder a lugares fí­sicos distintos.
+
+	    Raúl entonces consulta con el licenciado Varela, quien sugiere
+	    agregar un campo PID (process id) al tag virtual. ¿Solucionará
+	    esto el problema de aliasing?
+
+	    Otro problema que surge al usar caches virtualmente indexados,
+	    y virtualmente taggeados, es la aparición de sinónimos: los
+	    mismos aparecen cuando direcciones virtuales distintas refieren
+	    al mismo lugar fí­sico. ¿Solucionará este problema la idea del
+	    licenciado?
+
+	    Raúl piensa que otra forma de solucionar estos problemas, será
+	    usando un cache direct mapped, en vez de set associative. 
+	    ¿Tiene razón?
+	    %2.g La propuesta del lic. Varela soluciona el caso de aliasing 
+	    %homónimo, ya que el PID nos permite diferenciar a ambos procesos,
+	    %cuando usan el mismo puntero virtual.
+	    %
+	    %En cambio, el problema de los sinónimos no se solucionará, ya que
+	    %en general tendrámos dos direcciones virtuales distintas:
+	    %el sistema de memoria cache las verá como distintas, ya que van
+	    %a tener, en general, diferente tag. Por ende, ambas referencias 
+	    %competirán innecesariamente entre si por los recursos del cache.
+	    %
+	    %Usar un cache direct-mapped no solucionará el problema de los
+	    %sinónimos, ya que ambas direcciones virtuales seguirán compitiendo
+	    %por el mismo recurso.
+    \end{enumerate}
+
+\pagebreak
+
+  \item %Ejercicio 4  
+  Considerar una máquina con direcciones virtuales de 64 bits y páginas de 4KB.
+  Cuenta con una tabla de páginas jerárquica de tres niveles, donde los
+  í­ndices L1, L2 y L3 son de 12 bits cada uno. Los bits más significativos
+  no se utilizan. Ver cuadro \ref{tbl:vm_addr_fmt}.
+
+  \begin{table}[h]
+  \begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+  \hline
+  unused & L1 index & L2 index & L3 index & page offset \\
+  \hline
+  \multicolumn{3}{l}{63} & \multicolumn{2}{r}{0} \\
+  \end{tabular}
+  \caption{Formato de las direcciones virtuales}
+  \label{tbl:vm_addr_fmt}
+  \end{center}
+  \end{table}
+
+  \begin{enumerate}
+  \item ¿Cuántas entradas hay en la tabla de páginas del nivel 1?
+
+  %% Rta: 2^12
+
+  \item ¿Cuál es el tamaño de la parte implementada del espacio de
+	direcciones virtuales?
+
+  %% Rta: 2^(3*12 (niveles) + 12 (offset)) = 2^48
+
+  \item La figura \ref{fig:vm_mem_dump} muestra fragmentos del contenido de la
+	tabla de páginas jerárquica de tres niveles (la columna a la izquierda
+	corresponde a las direcciones fí­sicas de cada entrada en memoria).
+
+	Las PTEs en las tablas de nivel 1 y 2 contienen la dirección fí­sica
+	(PA) a o el número de bloque de disco (DBN) de la tabla del
+	siguiente nivel.
+
+	Las PTEs de la tabla de nivel 3 contiene el número de página fí­sica
+	(PPN) o el número de bloque de disco (DBN) de la página accedida.
+	Las direcciones fí­sicas son de 28 bits.
+	
+	El tamaño de las PTEs es de 4 bytes, y la dirección base (valor de 
+	root pointer) de la tabla actual es 0x0004000. Las direcciones más
+	bajas corresponden a los í­ndices más bajos de las tablas de páginas.
+	Sólo se muestran las páginas válidas. La columna ``R'' indica el bit
+	de página ``residente'' (o presente en memoria).
+  
+	Para cada dirección virtual dada a continuación, circular la
+	respuesta correcta y llenar el espacio en blanco si corresponde:
+  
+	\begin{enumerate}
+	\item Recorrido de las tablas de paginación para la $VA = 0x0000004010110804$
+	      \begin{enumerate}
+	      \item Page table entry invalid exception
+	      \item Page fault on page table entry
+	      \item Page fault, disk block number \underline{$\qquad\qquad\qquad$}
+	      \item Redisent, physical address \underline{$\qquad\qquad\qquad$}
+	      \end{enumerate}
+
+	      %% Rta:
+	      %% VA = 0x 0000 004 010 110 804
+	      %% L1idx = 004, L2idx = 010, L3idx = 110, offt = 804
+	      %% => Dir entrada L1: base + 4 * L1 idx = 0x0004000 + 4 (pq son PTEs de 4 bytes) * 004 = 0x0004010
+	      %% => ValL1 = 0x0010000, R=1 (PA)
+	      %% => Dir entrada L2: ValL1 + 4 * L2idx = 0x0010000 + 4 * 010 = 0x0010040
+	      %% => ValL2 = 0x0014000, R=1 (PA)
+	      %% => Dir entrada L3: ValL2 + 4 * L3idx = 0x0014000 + 4 * 110 = 0x0014440
+	      %% => ValL3 = 0x0110, R=1 (PPN)
+	      %% => Resident, physical address: PA = 0x0110804 (caso d')
+
+	\item Recorrido de las tablas de paginación para la $VA = 0x00000001113B0110$
+	      \begin{enumerate}
+	      \item Page table entry invalid exception
+	      \item Page fault on page table entry
+	      \item Page fault, disk block number \underline{$\qquad\qquad\qquad$}
+	      \item Redisent, physical address \underline{$\qquad\qquad\qquad$}
+	      \end{enumerate}
+
+	      %% Rta:
+	      %% VA = 0x 0000 000 111 3B0 110
+	      %% L1idx = 000, L2idx = 111, L3idx = 3B0, offt = 110
+	      %% => Dir entrada L1: base + 4 * L1 idx = 0x0004000 + 4 * 000 = 0x0004000
+	      %% => ValL1 = 0x001C000, R=1 (PA)
+	      %% => Dir entrada L2: ValL1 + 4 * L2idx = 0x001C000 + 4 * 111 = 0x001C444
+	      %% => ValL2 = 0x000100E, R=0 (DBN)
+	      %% => Page fault on page table entry (caso b')
+
+	\item Recorrido de las tablas de paginación para la $VA = 0x0000001101002CD0$
+	      \begin{enumerate}
+	      \item Page table entry invalid exception
+	      \item Page fault on page table entry
+	      \item Page fault, disk block number \underline{$\qquad\qquad\qquad$}
+	      \item Redisent, physical address \underline{$\qquad\qquad\qquad$}
+	      \end{enumerate}
+
+	      %% Rta:
+	      %% VA = 0x 0000 001 101 002 CD0
+	      %% L1idx = 001, L2idx = 101, L3idx = 002, offt = CD0
+	      %% => Dir entrada L1: base + 4 * L1 idx = 0x0004000 + 4 * 001 = 0x0004004
+	      %% => ValL1 = 0x0008000, R=1 (PA)
+	      %% => Dir entrada L2: ValL1 + 4 * L2idx = 0x0008000 + 4 * 101 = 0x0008404
+	      %% => ValL2 = 0x000C000, R=1 (PA)
+	      %% => Dir entrada L3: ValL2 + 4 * L3idx = 0x000C000 + 4 * 002 = 0x000C008
+	      %% => ValL3 = 0x000100A, R=0 (DBN)
+	      %% => Page fault, disk block number = 0x000100A (caso c')
+
+	\end{enumerate}
+\pagebreak
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{./gfx/vm_mem_dump}
+	\caption{Volcado de memoria en la región de la tabla de páginas}
+	\label{fig:vm_mem_dump}
+	\end{figure}
+
+
+	%%\item La máquina descripta en el punto \ref{item:vm1} cuenta con un caché
+	\item La máquina descripta cuenta con un caché
+	      único L1, el cual es accedido en paralelo con una TLB fully-associative
+	      de 64 entradas. El caché es Direct Mapped, de 16KB, bloques de 4 words,
+	      virtually-indexed y physically-tagged. El tamaño del word es de 4 bytes.
+	      
+	      \begin{enumerate}
+	      \item ¿Cuáles de los 64 bits de la dirección virtual son traducidos 
+		    por la TLB?
+		    \underline{$\qquad\qquad$} : \underline{$\qquad\qquad$}
+	      
+			      %% Rta: 12:47 (para ser estrictos, porque de 48 a 63 son redundantes)
+	      
+	      \item ¿Cuáles de los 64 bits de la dirección virtual se utilizan para
+		    indexar dentro del cache L1?
+		    \underline{$\qquad\qquad$} : \underline{$\qquad\qquad$}
+	      
+			      %% Rta: #bloques = 16K / 16 bytes = 1024 bloques
+			      %% Cache DM y virtually indexed => necesito los 10 bits de la VA a
+			      %% continuacion del offset (bits 0 a 3 para direccionar 16 bytes por bloque)
+			      %% => 4:13
+	      
+	      \item ¿Cuáles de los 28 bits de la dirección fí­sica forman el cache tag?
+		    \underline{$\qquad\qquad$} : \underline{$\qquad\qquad$}
+	      
+			      %% Rta: 14:47 (a partir del 47 no hace falta porque son redundantes)
+	      
+	      \end{enumerate}
+	
+	%%\item En el sistema del punto \ref{item:vm1} se previene \emph{aliasing} de la
+	\item En este sistema se previene \emph{aliasing} de la
+	      siguiente manera: si dos direcciones virtuales mapean a la misma
+	      dirección fí­sica, se requiere que el sistema operativo haga que los
+	      page offsets de las direcciones virtuales coincidan. ¿Esto funciona?
+	      (justifique, de lo contrario la respuesta se considera automáticamente
+	      incorrecta)
+	
+	      %% Rta: No funciona. Los page offsets para direcciones aliased entre sí­ son
+	      %% siempre iguales, no importa que haga, justamente porque es la parte que no
+	      %% se traduce y ambas apuntan a la misma dirección fí­sica.
+
+
+	\end{enumerate}
+
+\pagebreak
+    
+    \item %Ejercicio 5
+    Sea un sistema de memoria virtual que permite alojar páginas de
+    4KB y 4MB. El sistema usa 44 bits efectivos para describir direcciones
+    virtuales, y 40 para direcciones físicas. Las páginas de 4KB son
+    organizadas usando una tabla jerárquica de tres niveles; y las de 4MB
+    se organizan usando los dos primeros niveles de la misma tabla.
+
+    Para distinguir entre ambos casos, las L2 PTEs contienen información
+    que indican si el puntero apunta a una tabla L3, o a una página de 4MB.
+    Todas las PTEs son de 8 bytes. Ver figura \ref{fig::hier}.
+
+    \begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./gfx/ptes.eps}
+    \caption{jerarquía de traducción de direcciones.}
+    \label{fig::hier}
+    \end{figure}
+
+    El procesador dispone de un TLB de datos con 64 entradas, y cada 
+    entrada puede mapearse a cualquiera de los dos tipos de página, 4KB ó
+    4MB. Al ocurrir un TLB miss, las tablas de traducción son recorridas
+    por hardware, a fin de recargar el TLB. La política de reemplazo es
+    FIFO.
+
+    En este ejercicio, evaluaremos la ejecución y utilización de memoria
+    del siguiente programa; el mismo es usado para sumar dos arreglos, y
+    almacenar el resultado en un tercero:
+
+    \begin{small}
+    \begin{verbatim}
+	uint8_t A[1048576]; /* 1MB array */
+	uint8_t B[1048576]; /* 1MB array */
+	uint8_t C[1048576]; /* 1MB array */
+	for(int i = 0; i < 1048576; ++i)
+		C[i] = A[i] + B[i];
+    \end{verbatim}
+    \end{small}
+
+    Suponemos, además, que los arreglos \verb|A|, \verb|B|, y \verb|C| 
+    están ubicados en una región contigua de memoria física. 
+    Consideraremos, además, dos mapeos posibles:
+
+    \begin{itemize}
+    \item	4KB: los arreglos son mapeados usando 768 páginas de 4KB (es
+	    decir, cada arreglo usa 256 páginas);
+
+    \item	4MB: los arreglos son mapeados usando una única página.
+    \end{itemize}
+\pagebreak
+    En las preguntas que siguen, suponer que el programa es el único 
+    proceso en el sistema, e ignorar cualquier overhead asociado a la
+    ejecución de las instrucciones, o con el sistema operativo. Suponer
+    que los arreglos están alineados de tal forma, que minimizan el
+    número de PTEs involucradas.
+
+    \begin{enumerate}
+    \item	El particionado de la dirección virtual, en el caso de 4KB,
+	    es: 11 bits (L1 index), 11 bits (L2 index), 10 bits (L3 index),
+	    12 bits (page offset). Ver figura \ref{fig::vaddr4k}.
+
+	    \begin{figure}[ht]
+	    \centering
+	    \includegraphics[width=0.45\textwidth]{./gfx/vaddr.eps}
+	    \caption{composición de las direcciones virtuales (4KB).}
+	    \label{fig::vaddr4k}
+	    \end{figure}
+
+	    Mostrar, en forma similar, cómo sería el particionado de una
+	    dirección virtual que mapee a una página de 4MB. Incluir el
+	    nombre y longitud en bits de todos los campos involucrados.
+
+      %RESPUESTA:  L1: 10bits (43:33), L2: 11 bits (32:22), Page Offset: 22 bits (21:0)
+    
+    \item	Definimos el overhead de traducción (PTO), como el cociente 
+	    entre (numerador) la cantidad de memoria física usada para
+	    almacenar las tablas de paginación, y (denominador) la cantidad
+	    de memoria física dedicada a páginas de datos.
+
+	    Para el programa dado anteriormente, ?`cuál es el $PTO_{4KB}$?
+	    ?`cuál es el $PTO_{4MB}$?
+	 %40 bits para dir física 2^40 = 1024Gb de memoria direccionable
+	 %PTO4kb = (16Kb + 2048*16kb + 2048*2048*8kb) / (2048 * 2048 *  1024 * 4k) = 0.001955033
+	 %PTO4Mb = (16Kb + 2048*16kb ) / (2048 * 2048 * (1024 * 4)Kb ) = 0.000001908
+
+
+    \item	Definimos el overhead de fragmentación (PFO), como el cociente
+	    entre (numerador) la cantidad de memoria física dedicada a
+	    páginas de datos, pero que nunca es accedida; y (denominador)
+	    cantidad de memoria física alocada a páginas de datos, 
+	    accedida.
+
+	    Para el programa visto, ?`cuánto valen $PFO_{4KB}$ y
+	    $PFO_{4MB}$?
+	 %PFO 4Kb -> necesito 1 PTE L1, 1 PTE L2 y 768 PTE L3 
+	 %PFO 4Mb -> necesito 1 PTE L1, 1 PTE L2 
+	    
+	 %PFO4kb = (16376 + 16376 + 2048) / (768×4×1024) = 0.011062622
+	 %PFO4Mb = (16376 + 16376) / (4*1024*1024) = 0.007808685
+
+    \item	Consideremos ahora la ejecución del programa, suponiendo que
+	    la TLB está inicialmente vacía. Para cada uno de los casos
+	    (i.e. 4KB y 4MB), ?`cuántos TLB misses ocurren, y cuántos
+	    accesos a memoria (PTEs) son necesarios para recargar la TLB?
+    
+
+
+    \item	?`Cuál de los siguientes números es el mejor candidato para
+	    estimar (orden de magnitud) el speedup? 
+	    $SU = \left\{1.01; 10; 1000; 1000000\right\}$. Elegir uno, 
+	    explicando brevemente tu respuesta. Tomar el caso de 4KB como
+	    referencia.
+    \end{enumerate}
+
+
+  \end{enumerate}
+
+\end{document}
+

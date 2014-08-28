@@ -37,14 +37,13 @@ una versión reciente del sistema operativo NetBSD \cite{NETBSD}.
 En la clase del 21/8 hemos repasado, brevemente, los pasos necesarios para la 
 instalación y configuración del entorno de desarrollo.
 
-También se usará el programa \gprof que permite hacer un análisis de cómo se reparte el tiempo de ejecución de un programa entre sus componentes.
+También se usará el programa \gprof{} que permite hacer un análisis de cómo se reparte el tiempo de ejecución de un programa entre sus componentes.
 \section{Introducción}
 El trabajo práctico consiste en implementar y optimizar una versión minimalista
 del comando \nl\cite{NL} de Unix. El mismo recibe texto e imprime por \stdout{} las 
 líneas numeradas.
 
-Una vez implementado, se debe utilizar
-\texttt{gprof}\cite{GPROF} para buscar las secciones del programa que consumen
+Una vez implementado, se debe utilizar \gprof\cite{GPROF} para buscar las secciones del programa que consumen
 más tiempo de ejecución
 
 \section{El programa}
@@ -139,8 +138,8 @@ datos utilizados en su elaboración. Esto incluye corridas de \gprof, \unixtime,
 \end{itemize}
 
 \begin{thebibliography}{99}
-\bibitem{NETBSD}  The NetBSD project, \url{http://www.netbsd.org/}.
 \bibitem{GXEMUL}  GXemul, \url{http://gavare.se/gxemul/}.
+\bibitem{NETBSD}  The NetBSD project, \url{http://www.netbsd.org/}.
 \bibitem{NL}\nl{} man page, \url{http://www.manpagez.com/man/1/nl/}
 \bibitem{GPROF} \gprof{} manual, \url{https://www.cs.utah.edu/dept/old/texinfo/as/gprof.html}
 \bibitem{TIME} \unixtime{} man page  , \url{http://linux.die.net/man/1/time}

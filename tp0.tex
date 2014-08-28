@@ -23,31 +23,42 @@
 \begin{document}
 
 \maketitle
-\section{Objetivos}
+ \section{Objetivos}
+El objetivo de este trabajo es familiarizarse con las herramientas de software que usaremos en los siguientes
+trabajos, implementando un programa (y su correspondiente documentación) que 
+resuelva el problema piloto que presentaremos más abajo.
+ 
+ \section{Recursos}
+ 
+Usaremos el programa GXemul \cite{GXEMUL} para simular el entorno de desarrollo
+que utilizaremos en este y otros trabajos prácticos, una máquina MIPS corriendo
+una versión reciente del sistema operativo NetBSD \cite{NETBSD}.
 
-\section{Recursos}
+En la clase del 21/8 hemos repasado, brevemente, los pasos necesarios para la 
+instalación y configuración del entorno de desarrollo.
 
+También se usará el programa \gprof que permite hacer un análisis de cómo se reparte el tiempo de ejecución de un programa entre sus componentes.
 \section{Introducción}
 El trabajo práctico consiste en implementar y optimizar una versión minimalista
 del comando \nl\cite{NL} de Unix. El mismo recibe texto e imprime por \stdout{} las 
-lineas numeradas.
+líneas numeradas.
 
 Una vez implementado, se debe utilizar
 \texttt{gprof}\cite{GPROF} para buscar las secciones del programa que consumen
-mas tiempo de ejecución
+más tiempo de ejecución
 
 \section{El programa}
-El programa debe leer el contenido de uno o mas archivos y por cada linea, imprimir el número de linea. En caso de 
-que no se indique ningún archivo, entonces debe leerse de \stdin.
+El programa debe leer el contenido de uno o mas archivos y por cada línea, imprimir el número de línea, seguido de la línea propiamente dicha.
+En caso de que no se indique ningún archivo, entonces debe leerse de \stdin.
 
 Esta versión de \nl{} solo debe implementar las siguientes opciones:
 \begin{itemize}
-\item \texttt{-s}, \texttt{--number-separator}. Indica el texto separador entre número de linea y la linea.
-\item \texttt{-v}, \texttt{--starting-line-number}. Indica el número de la primer linea.
-\item \texttt{-i}, \texttt{--line-increment}. Indica el incremento entre lineas consecutivas.
-\item \texttt{-t}, \texttt{--non-empty}. Si está presente, solo se deben numerar las lineas no vacias. Caso contrario,
-también deben numerar las lineas vacias 
-\item \texttt{-l}, \texttt{--join-blank-lines}. Indica la cantidad de lineas vacias a agrupar en una única linea.
+\item \texttt{-s}, \texttt{--number-separator}. Indica el texto separador entre número de línea y la línea.
+\item \texttt{-v}, \texttt{--starting-line-number}. Indica el número de la primer línea.
+\item \texttt{-i}, \texttt{--line-increment}. Indica el incremento entre líneas consecutivas.
+\item \texttt{-t}, \texttt{--non-empty}. Si está presente, solo se deben numerar las líneas no vacias. Caso contrario,
+también deben numerar las líneas vacias 
+\item \texttt{-l}, \texttt{--join-blank-lines}. Indica la cantidad de líneas vacias a agrupar en una única línea.
 \item \texttt{-h}, \texttt{--help}. Imprime el mensaje de ayuda.
 \end{itemize}
 
@@ -123,11 +134,13 @@ datos utilizados en su elaboración. Esto incluye corridas de \gprof, \unixtime,
 
 \section{Fechas de entrega}
 \begin{itemize}
-\item Fecha de entrega
-\item Fecha de vencimiento
+\item Fecha de entrega: Jueves 11 de Septiembre de 2014
+\item Fecha de vencimiento: Jueves 25 de Septiembre de 2014
 \end{itemize}
 
 \begin{thebibliography}{99}
+\bibitem{NETBSD}  The NetBSD project, \url{http://www.netbsd.org/}.
+\bibitem{GXEMUL}  GXemul, \url{http://gavare.se/gxemul/}.
 \bibitem{NL}\nl{} man page, \url{http://www.manpagez.com/man/1/nl/}
 \bibitem{GPROF} \gprof{} manual, \url{https://www.cs.utah.edu/dept/old/texinfo/as/gprof.html}
 \bibitem{TIME} \unixtime{} man page  , \url{http://linux.die.net/man/1/time}

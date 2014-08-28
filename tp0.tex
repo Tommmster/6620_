@@ -62,11 +62,30 @@ se debe calcular el \textit{speed up} obtenido.
 
 \section{Ejemplos}
 
+\noindent
+Mostramos el mensaje de ayuda:
+\begin{small}
 \begin{verbatim}
 $tp0 -h
+USAGE:
+tp0 [OPTION]...[FILE]...
+Write each FILE to standard output, with line numbers added.  With no FILE, or when FILE is -,
+read standard input
 
+OPTIONS:
+-h, --help	Print this message and quit
+-s, --number-separator (mandatory argument)
+-v, --starting-line-number (mandatory argument)
+-i, --line-increment (mandatory argument)
+-l, --join-blank-lines (mandatory argument)
+-t, --non-blank
+$
 \end{verbatim}
+\end{small}
 
+\noindent
+Procesamos un único archivo:
+\begin{small}
 \begin{verbatim}
 $tp0 -s="-->" -v 3 --line-increment=2 in.txt
 3-->While Belgium is bleeding and hoping, while Poland suffers and dreams of
@@ -75,7 +94,9 @@ $tp0 -s="-->" -v 3 --line-increment=2 in.txt
 9-->remote, so remote that her ardent sighs cannot be heard.
 $
 \end{verbatim}
+\end{small}
 
+\begin{small}
 \begin{verbatim}
 $cat dante.txt | tp0 -t
 1-->O'er better waves to speed her rapid course
@@ -86,6 +107,7 @@ $cat dante.txt | tp0 -t
 5-->In which the human spirit from sinful blot
 6-->Is purg'd, and for ascent to Heaven prepares.
 \end{verbatim}
+\end{small}
 
 
 \section{Entregables}

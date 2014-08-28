@@ -1,0 +1,113 @@
+\documentclass[9pt,a4paper]{article}
+
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{fancyhdr}
+
+\newcommand{\stdout}{\texttt{stdout}}
+\newcommand{\stdin}{\texttt{stdin}}
+\newcommand{\stderr}{\texttt{stderr}}
+\newcommand{\gprof}{\texttt{gprof}}
+\newcommand{\nl}{\texttt{nl}}
+\newcommand{\unixtime}{\texttt{time}}
+
+\pagestyle{fancy}
+
+\title{6620: Organización de computadoras.\\ Trabajo práctico 0: Infraestructura básica}
+\begin{document}
+
+\maketitle
+\section{Objetivos}
+
+\section{Recursos}
+
+\section{Introducción}
+El trabajo práctico consiste en implementar y optimizar una versión minimalista
+del comando \nl\cite{NL} de Unix. El mismo recibe texto e imprime por \stdout{} las 
+lineas numeradas.
+
+Una vez implementado, se debe utilizar
+\texttt{gprof}\cite{GPROF} para buscar las secciones del programa que consumen
+mas tiempo de ejecución
+
+\section{El programa}
+El programa debe leer el contenido de uno o mas archivos y por cada linea, imprimir el número de linea. En caso de 
+que no se indique ningún archivo, entonces debe leerse de \stdin.
+
+Esta versión de \nl{} solo debe implementar las siguientes opciones:
+\begin{itemize}
+\item \texttt{-s}, \texttt{--number-separator}. Indica el texto separador entre número de linea y la linea.
+\item \texttt{-v}, \texttt{--starting-line-number}. Indica el número de la primer linea.
+\item \texttt{-i}, \texttt{--line-increment}. Indica el incremento entre lineas consecutivas.
+\item \texttt{-t}, \texttt{--non-empty}. Si está presente, solo se deben numerar las lineas no vacias. Caso contrario,
+también deben numerar las lineas vacias 
+\item \texttt{-l}, \texttt{--join-blank-lines}. Indica la cantidad de lineas vacias a agrupar en una única linea.
+\item \texttt{-h}, \texttt{--help}. Imprime el mensaje de ayuda.
+\end{itemize}
+
+Los resultados deben ser impresos en \stdout{}, mientras que los mensajes de error u otras cuestiones deben imprimirse por \stderr{}.
+
+\subsection{Mediciones}
+Una vez que el programa haya sido implementado y verificado, el programa debe ser optimizado. Con este objetivo en mente, debe
+utilizarse \gprof{} para analizar corridas del programa y determinar cuales son las funciones aptas para ser optimizadas.
+
+Mediante el comando \unixtime\cite{TIME} es posible medir el tiempo de ejecución del programa. Por cada versión del programa
+se debe calcular el \textit{speed up} obtenido.
+
+\section{Ejemplos}
+
+\begin{verbatim}
+$tp0 -h
+
+\end{verbatim}
+
+\begin{verbatim}
+$tp0 -s="-->" -v 3 --line-increment=2 in.txt
+3-->While Belgium is bleeding and hoping, while Poland suffers and dreams of
+5-->liberation, while Serbia is waiting for redemption, there is a little
+7-->country the soul of which is torn to pieces--a little country that is so
+9-->remote, so remote that her ardent sighs cannot be heard.
+$
+\end{verbatim}
+
+\begin{verbatim}
+$cat dante.txt | tp0 -t
+1-->O'er better waves to speed her rapid course
+2-->The light bark of my genius lifts the sail,
+3-->Well pleas'd to leave so cruel sea behind;
+
+4-->And of that second region will I sing,
+5-->In which the human spirit from sinful blot
+6-->Is purg'd, and for ascent to Heaven prepares.
+\end{verbatim}
+
+
+\section{Entregables}
+El trabajo práctico debe ser entregado en un folio A4, acompañado por un CD. Estos
+deben incluir:
+\begin{itemize}
+\item El informe, incluyendo los objetivos del trabajo práctico, las conclusiones y todos los 
+datos utilizados en su elaboración. Esto incluye corridas de \gprof, \unixtime, y mediciones relevantes
+\item El código fuente en C.
+\item El código assembly generado por el compilador, \textbf{solo en formato digital}.
+\item Este enunciado.
+\end{itemize}
+
+\section{Fechas de entrega}
+\begin{itemize}
+\item Fecha de entrega
+\item Fecha de vencimiento
+\end{itemize}
+
+\begin{thebibliography}{99}
+\bibitem{NL}\nl{} man page, \url{http://www.manpagez.com/man/1/nl/}
+\bibitem{GPROF} \gprof{} manual, \url{https://www.cs.utah.edu/dept/old/texinfo/as/gprof.html}
+\bibitem{TIME} \unixtime{} man page  , \url{http://linux.die.net/man/1/time}
+\end{thebibliography}
+\end{document}

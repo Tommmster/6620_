@@ -6,6 +6,8 @@
 \usepackage{multirow}
 \usepackage{fancyhdr}
 \usepackage{url}
+\usepackage{listings}
+\usepackage{color}
 
 \title{66:20 Organización de Computadoras\\
         Principios de conjuntos de instrucciones / Assembly MIPS}
@@ -14,6 +16,18 @@
 \date{}
 
 \begin{document}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  tabsize=2,
+  language=C,
+  extendedchars=true
+}
+
+\lstdefinestyle{6620C}{
+  identifierstyle=\color{blue}
+%  stringstyle=\color{purple}
+}
 
 \maketitle
 \begin{center}
@@ -138,6 +152,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 			       computadora será más rápida y por cuanto?
 			       
 			       
+  \pagebreak
 			 %RESPUESTA
 %			 
 %			 a)
@@ -183,14 +198,6 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 %				instrucciones que se procesan el pipeline, con lo cual en un caso real,
 %				el resultado es incierto con estos datos.
 %						       
-			       
-  \item %Ejercicio 3
-  Codificar una función que tome una linea de texto y retorne el entero correspondiente.
-  \begin{verbatim}
-	int atoi(const char *s)
-  \end{verbatim}
- 	
-  \pagebreak
      
   \item %Ejercicio 4  
   Codificar en Assembly MIPS y diagramar el stack de las siguientes funciones.
@@ -277,6 +284,36 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   size_t strlen(const char *s)
   \end{verbatim}
 
+  
+  \pagebreak
+  \item 
+  Codificar una función que tome una linea de texto y retorne el entero correspondiente.
+  	
+  \lstinputlisting[style=6620C]{simple_atoi.c}
+  \pagebreak
+     
+  \item %Ejercicio 4  
+  Codificar en Assembly MIPS y diagramar el stack de las siguientes funciones.
+	\begin{small}
+			\begin{verbatim}
+			
+			void proc(int i){
+			  int j;
+			  j = i+20; 
+			} 
+
+			int main(int argc, char** argv){
+			    int i=10; 
+			    proc(i); 
+			    return 0; 
+			} 
+			
+	\end{verbatim}
+  \end{small}
+  
+  
+  \vfill
+ 
 
   \item%
   Codificar en C y Assembly MIPS una función que transpone una matriz cuadrada de enteros de $n x n$

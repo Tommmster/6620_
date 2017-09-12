@@ -15,6 +15,9 @@
 \sloppy
 \date{}
 
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+
 \begin{document}
 \lstset{%
   basicstyle=\small\ttfamily,
@@ -25,7 +28,11 @@
 }
 
 \lstdefinestyle{6620C}{
-  identifierstyle=\color{blue}
+  identifierstyle=\color{blue},
+  commentstyle=\color{mygreen},
+  keywordstyle=\bfseries\color{mymauve},
+  frame=single,
+  breaklines=true
 %  stringstyle=\color{purple}
 }
 
@@ -42,9 +49,11 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   \item %Ejercicio 1
 	  Pasar el siguiente código C a MIPS.
 		\begin{small}
-			\begin{verbatim}
-				Asumir que las seis variables (f,g,h,i,j,k) corresponden a seis registros 
+			\begin{lstlisting}[style=6620C]
+				/*
+         Asumir que las seis variables (f,g,h,i,j,k) corresponden a seis registros 
 				($s0,$s1,$s2,$s3,$s4,$s5), y existe una variable $t2=4.
+        */
 				 
 				switch (k) {
 					case 0:
@@ -56,13 +65,13 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 					case 3:
 				             f = i - j; break; 
 				}
-			\end{verbatim}
+			\end{lstlisting}
 		\end{small}
 		\textit{Pista: usar la variable k para indexar una tabla de saltos, y luego 
 		saltar a dichos valores.
 		Primero verificar que el valor k se corresponda con una de las opciones posibles
 		(0 \(<=\) k \(<=\) 3 ). Si no, salir.}
-		
+	 \vfill	
 		
 		%RESPUESTA:
 		
@@ -202,7 +211,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   \item %Ejercicio 4  
   Codificar en Assembly MIPS y diagramar el stack de las siguientes funciones.
 	\begin{small}
-			\begin{verbatim}
+			\begin{lstlisting}[style=6620C]
 			
 			void proc(int i){
 			  int j;
@@ -215,7 +224,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 			    return 0; 
 			} 
 			
-	\end{verbatim}
+	\end{lstlisting}
   \end{small}
   
   
@@ -266,7 +275,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   \item %Ejercicio 5
   Codificar en Assembly MIPS y diagramar el stack de la siguiente función.
 		\begin{small}
-			\begin{verbatim}
+			\begin{lstlisting}[style=6620C]
 				unsigned int
 				factorial (unsigned int n)
 				{
@@ -275,14 +284,14 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 				    else 
 				        return n*factorial(n-1);
 				}
-			\end{verbatim}
+			\end{lstlisting}
 		\end{small}
   
   \item %Ejercicio 6
   Codificar en C  y Assembly MIPS una función que reciba calcule la longitud de un C-string\\
-  \begin{verbatim}
+  \begin{lstlisting}[style=6620C]
   size_t strlen(const char *s)
-  \end{verbatim}
+  \end{lstlisting}
 
   
   \pagebreak
@@ -295,7 +304,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   \item %Ejercicio 4  
   Codificar en Assembly MIPS y diagramar el stack de las siguientes funciones.
 	\begin{small}
-			\begin{verbatim}
+			\begin{lstlisting}[style=6620C]
 			
 			void proc(int i){
 			  int j;
@@ -308,7 +317,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 			    return 0; 
 			} 
 			
-	\end{verbatim}
+	\end{lstlisting}
   \end{small}
   
   
@@ -317,17 +326,17 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
 
   \item%
   Codificar en C y Assembly MIPS una función que transpone una matriz cuadrada de enteros de $n x n$
-
-  \begin{verbatim}
+  
+  \begin{lstlisting}[style=6620C]
 	void mat_transp(int *m, size_t n);
-  \end{verbatim}
+  \end{lstlisting}
 
   \item
   Codificar en C y Assembly MIPS una función que indique si un número es primo o no.
 
-  \begin{verbatim}
+  \begin{lstlisting}[style=6620C]
 	int prime(unsigned int n);
-  \end{verbatim}
+  \end{lstlisting}
 	 
 
    \vfill
@@ -335,7 +344,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
   \item
   Codificar en Assembly MIPS una solución al problema de Las Torres de Hanoi\footnote{\url{http://en.wikipedia.org/wiki/Tower_of_Hanoi}}
 
-  \begin{verbatim}
+  \begin{lstlisting}[style=6620C]
     void
     hanoi(int n, int start, int finish, int extra)
     {
@@ -345,7 +354,7 @@ Complementar esta guia de ejercicios con los ejercicios 2.1, 2.2, 2.3, 2.4, 2.6,
        hanoi(n-1, extra, finish, start);
     }
 
-  \end{verbatim}
+  \end{lstlisting}
   
  %RESPUESTA Ej 5
  

@@ -1,0 +1,60 @@
+\documentclass[a4paper]{article}
+
+
+\usepackage{listings}
+\usepackage{color}
+
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+
+\begin{document}
+
+
+\section{Disposición de datos en el \textit{caché}}
+Se dispone de una computadora MIPS32 que dispone de un \textit{caché} 2WSA, WT/$\not WA$,capacidad total 128 bytes y 
+bloques de 8 bytes.
+
+\begin{enumerate}
+
+\item Indicar el contenido final del \textit{cache}, así como la tasa de desaciertos (\texttt{MR}) al ejecutar la 
+función \texttt{strlen} con el siguiente argumento:
+
+\begin{lstlisting}
+const char *s = lplusd; /* point to a 26 bytes long C-string */
+strlen(s);
+\end{lstlisting}
+ 
+\begin{enumerate}[a]
+  
+  \item A partir de la implementación provista en la sección \ref{sec:cod_c} y considerando \textbf{únicamente} 
+	los accesos al arreglo de caracteres.
+ 
+  \item A partir de la implementación provista en la sección \ref{sec:cod_asm} y considerando \textbf{únicamente} 
+	los accesos al \textit{stack} de la función \texttt{strlen}.
+  
+  \item Considerando \textbf{únicamente} el acceso a memoria para realizar el \textit{fetch} de instrucciones.
+
+
+  \item Repetir los dos puntos anteriores, utilizando la implementación provista en la sección \ref{sec:cod_asm_r}
+\end{enumerate}
+\end{enumerate}
+
+\section{Código fuente}
+\subsection{Implementación en C}
+\label{sec:cod_c}
+\lstinputlisting[language=C]{code/strlen.c}
+
+\pagebreak
+\subsection{Implementación en assembly Mips32}
+\subsubsection{Utilizando el \textit{stack} para almacenar variables locales}
+\label{sec:cod_asm}
+\lstinputlisting[language=C,basicstyle=\footnotesize]{code/strlen.S}
+
+\pagebreak
+\subsubsection{Utilizando registros para almacenar variables locales}
+\label{sec:cod_asm_r}
+\lstinputlisting[language=C,basicstyle=\footnotesize]{code/strlen_2.S}
+
+\end{document}

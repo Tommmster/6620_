@@ -1,6 +1,5 @@
 \documentclass[a4paper]{article}
 
-
 \usepackage{listings}
 \usepackage{color}
 
@@ -8,15 +7,28 @@
 \selectlanguage{spanish}
 \usepackage[utf8]{inputenc}
 \usepackage{enumerate}
+\usepackage{fancyhdr}
 
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyfoot{}
+
+\fancyfoot[R]{\thepage}
+\fancyhead[L]{6620 - Organización de Computadoras.}
+\title{Impacto de la función \textit{strlen} en la jerarquía de memoria}
+\date{}
 \begin{document}
+\maketitle
 
 
 \section{Disposición de datos en el \textit{caché}}
-Se dispone de una computadora MIPS32 que dispone de un \textit{caché} 2WSA, WT/$\not WA$,capacidad total 128 bytes y 
-bloques de 8 bytes.
+Se dispone de una computadora MIPS32 que dispone de un \textit{caché} 2WSA, $WT/\neg WA$,capacidad total 128 bytes,
+bloques de 8 bytes y política de reemplazo LRU.
 
 \begin{enumerate}
+
+\item Indicar que bits de las direcciones emitidas por el procesador se corresponden con los campos \textit{offset}, \textit{index} y \textit{tag}.
 
 \item Indicar el contenido final del \textit{cache}, así como la tasa de desaciertos (\texttt{MR}) al ejecutar la 
 función \texttt{strlen} con el siguiente argumento:
@@ -26,7 +38,8 @@ const char *s = lplusd; /* point to a 26 bytes long C-string */
 strlen(s);
 \end{lstlisting}
  
-\begin{enumerate}[a]
+ Se puede suponer que el registro \texttt{\$sp} contiene el valor \texttt{0xFFFF0000} y que la dirección representada por \texttt{s} está alineada con el \textit{cache}\footnote{El dato apuntado por \texttt{s} se corresponde con el primer byte del primer bloque.}
+\begin{enumerate}[a.]
   
   \item A partir de la implementación provista en la sección \ref{sec:cod_c} y considerando \textbf{únicamente} 
 	los accesos al arreglo de caracteres.
@@ -39,12 +52,18 @@ strlen(s);
 
   \item Repetir los dos puntos anteriores, utilizando la implementación provista en la sección \ref{sec:cod_asm_r}
 \end{enumerate}
+
+\item ¿Es posible realizar alguna afirmación sobre el tiempo de ejecución de las distintas variantes en esta computadora?
+
 \end{enumerate}
 
+\pagebreak
+
+\appendix
 \section{Código fuente}
 \subsection{Implementación en C}
 \label{sec:cod_c}
-\lstinputlisting[language=C]{code/strlen.c}
+\lstinputlisting[language=C,basicstyle=\footnotesize]{code/strlen.c}
 
 \pagebreak
 \subsection{Implementación en assembly Mips32}

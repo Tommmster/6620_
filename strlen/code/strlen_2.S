@@ -1,9 +1,8 @@
 #include <mips/regdef.h>
 
-#define SS 16
-#define RSA_FP 12
-#define RSA_GP 8
-#define STACK_P 0
+#define SS 8
+#define RSA_FP 4
+#define RSA_GP 0
 
 	.globl strlen
 	.text

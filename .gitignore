@@ -3,5 +3,7 @@
 *.aux
 *.pdf
 *.swp
+cod/
+tmp/
 pdfs/
 

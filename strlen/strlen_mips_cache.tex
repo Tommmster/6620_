@@ -9,11 +9,17 @@
 \usepackage{enumerate}
 \usepackage{fancyhdr}
 
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
 \pagestyle{fancy}
 
 \fancyhead{}
-\fancyfoot{}
-
+\fancyfoot{} 
 \fancyfoot[R]{\thepage}
 \fancyhead[L]{6620 - Organización de Computadoras.}
 \title{Impacto de la función \textit{strlen} en la jerarquía de memoria}
@@ -23,9 +29,8 @@
 
 
 \section{Disposición de datos en el \textit{caché}}
-Se dispone de una computadora MIPS32 que dispone de un \textit{caché} 2WSA, $WT/\neg WA$,capacidad total 128 bytes,
-bloques de 8 bytes y política de reemplazo LRU.
-
+Se dispone de una computadora MIPS32 que dispone de un \textit{caché} 2WSA, \texttt{$WT/\neg WA$},capacidad total 128 bytes,
+bloques de 8 bytes y política de reemplazo \texttt{LRU}.
 \begin{enumerate}
 
 \item Indicar que bits de las direcciones emitidas por el procesador se corresponden con los campos \textit{offset}, \textit{index} y \textit{tag}.
@@ -49,7 +54,6 @@ strlen(s);
   
   \item Considerando \textbf{únicamente} el acceso a memoria para realizar el \textit{fetch} de instrucciones.
 
-
   \item Repetir los dos puntos anteriores, utilizando la implementación provista en la sección \ref{sec:cod_asm_r}
 \end{enumerate}
 
@@ -57,6 +61,28 @@ strlen(s);
 
 \end{enumerate}
 
+\section{Tiempos de acceso}
+Para los siguientes ejercicios, suponemos que la memoria principal dispone de una latencia de 100 ns, y un ancho de banda de 200 Mhz.
+
+En este contexto se decide cambiar el \textit{caché} unificado por un \textit{caché split} de la siguiente manera:
+\begin{itemize}
+  \item Tanto el \textit{caché} de instrucciones como el de datos tienen una capacidad de 64 bytes, lineas de 8 bytes y tiempo de \textit{hit}
+($T_{hit}$) de 1 ns
+  \item Ambos son \textit{Direct Mapped}\footnote{i.e de correspondencia directa}
+\end{itemize}
+
+\begin{enumerate}[a.]
+\item Calcular la tasa de desaciertos y clasificar según el Modelo \textbf{3C}
+\item Calcular el tiempo promedio de acceso a memoria
+
+\item Se proponen las siguientes optimizaciones. Para cada una, calcular el \textit{Speed Up} correspondiente
+\begin{enumerate}[i.]
+  \item Para el \textit{caché} de instrucciones, la linea es de 16 bytes.
+  \item El caché de datos pasa a ser \textit{2WSA}, con política de reemplazo \texttt{LRU} y el $T_{hit}$ es de 3 ns
+  \item El caché de datos tiene política de escritura \texttt{WB/WA}
+\end{enumerate}
+
+\end{enumerate}
 \pagebreak
 
 \appendix

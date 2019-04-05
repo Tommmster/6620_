@@ -1,6 +1,5 @@
 \documentclass{article}
 
-
 \title{Trabajo práctico 1: Conjunto de instrucciones MIPS}
 \begin{document}
 
@@ -15,9 +14,8 @@ En la clase del jueves 4/4 presentamos las herramientas necesarias para poder co
 programas escritos en assembly MIPS 32 y el ABI requerido para poder ejecutar llamadas a 
 función desde código C utilizando el compilador \texttt{GCC}
 
-
 \section{Descripción}
-El trabajo práctico consiste en implementar un problema denominado "La hormiga artista". El mismo plantea un recorrido
+El trabajo práctico consiste en implementar un problema denominado \underline{"La hormiga artista"}. El mismo plantea un recorrido
 sobre un espacio de dos dimensiones, donde el mismo está definido por reglas predefinidas.
 
 Se dispone de un area bidimensional dividida en celdas cuyo tamaño es configurable, donde cada celda está pintada de un color 
@@ -40,17 +38,56 @@ Una vez agotadas las iteraciones, el programa imprime el estado de la grilla en 
 
 \subsection{Implementación}
 
+La función principal a implementar es la siguiente
 \begin{verbatim}
         void*
         paint (void *ant, void *grid, void *palette, uint32_t iterations)
 \end{verbatim}
 
+Si bien no se fuerza una implementación de las distintas estructuras, se recomienda las siguientes:
+
+\begin{verbatim}
+        typedef struct {
+            unsigned int x, y; /* Cell coordinates */
+            unsigned int o; /* orientation */
+        } ant_t;
+
+        typedef struct {
+            unsigned int []colours;
+            unsigned int current;
+        } palette_t
+\end{verbatim}
+
+Mientras que la siguiente es la implementación más simple del espacio bidimensional
+\begin{verbatim}
+        typedef struct {
+            unsigned int [][]colour; /*cell state */
+            unsigned int w, h; /* grid width & height */
+        } square_grid_t;
+\end{verbatim}
+
 \section{Código MIPS}
+Al igual que al programar en un lenguaje de alto nivel, se recomienda modularizar el código en funciones
+cortas y con un único propósito. Adicionalmente, si bien es posible llamar funciones C desde código assembly,
+es preferible portar las funciones llamadas\footnote{Sin embargo es posible escribir funciones en C que ayuden
+al depurar el programa}.
+
+Con el fin de obtener un programa \textit{correcto}, se recomienda escribir una versión inicial que no contemple
+optimizaciones prematuras. Por ejemplo, utilizando el stack para variables locales y realizando una traducción
+de código C a \textit{assembly}. Posteriores versiones pueden implementar mejoras como \underline{tablas de saltos},
+variables locales en registros o variaciones al ABI.
 
 \section{Ejemplos}
 
-\section{Entrega}
+\section{Consultas}
 
+\section{Extras}
+\begin{itemize}
+\item Mediciones de tiempo
+\item Impacto sobre el \textit{cache}
+\end{itemize}
+
+\section{Condiciones de entrega}
 Las fechas de entrega para el trabajo práctico son el Jueves 25/4 y el jueves 9/5. La entrega debe incluir un informe
 describiendo la resolución del trabajo práctico, que incluya:
 
@@ -58,9 +95,11 @@ describiendo la resolución del trabajo práctico, que incluya:
 \item Carátula especificando los datos y contacto de los integrantes del grupo (dirección de correo electrónico, \textit{handle} de slack)
 \item Instrucciones necesarias para compilar y ejecutar el programa
 \item Decisiones relevantes sobre la implementación y resolución
-\item Conclusiónes con fundamentos reales
+\item Conclusiónes con \underline{fundamentos reales}
 \item Código fuente
 \item Este enunciado
 \end{itemize}
+
+\section{Referencias}
 
 \end{document}

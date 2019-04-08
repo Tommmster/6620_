@@ -28,7 +28,7 @@ palette_t palette;
 void *
 paint(void *paint, void *grid, void *palette, uint32_t iterations)
 {
-    return NULL;
+    return grid;
 }
 
 /*

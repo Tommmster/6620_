@@ -57,28 +57,7 @@ espacio bidimensional debe programarse y tiene la siguiente interfaz:
         paint (void *ant, void *grid, void *palette, uint32_t iterations)
 \end{verbatim}
 
-Si bien no se fuerza una implementación de las distintas estructuras, se recomienda las siguientes:
-
-\begin{verbatim}
-        typedef struct {
-            unsigned int x, y; /* Cell coordinates */
-            unsigned int o; /* orientation */
-        } ant_t;
-
-        typedef struct {
-            unsigned int []colours;
-            unsigned int current;
-        } palette_t
-\end{verbatim}
-
-Mientras que la siguiente es la implementación más simple del espacio bidimensional
-\begin{verbatim}
-        typedef struct {
-            unsigned int [][]colour; /* cell state */
-            unsigned int w, h; /* grid width & height */
-        } square_grid_t;
-\end{verbatim}
-
+Debe entregarse un programa portable, que pueda ser construido para
 \subsection{Código MIPS}
 Al igual que al programar en un lenguaje de alto nivel, se recomienda modularizar el código en funciones
 cortas y con un único propósito. Adicionalmente, si bien es posible llamar funciones C desde código assembly,

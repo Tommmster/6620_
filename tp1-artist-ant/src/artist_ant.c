@@ -8,12 +8,6 @@
 #include "ant_engine.h"
 #include "artist_ant.h"
 
-#define panic(s)       \
-  do {                 \
-    fprintf(stderr, "%s: %s\n", __FUNCTION__, s);\
-    exit(1);            \
-  } while(0);
-
 static uint32_t grid_width;
 static uint32_t grid_height;
 static square_grid_t grid;
@@ -67,13 +61,16 @@ main(int argc, char **argv)
 
         break;
       case 'p': /* palette */
+        colour_spec = (char *) malloc(strlen(optarg));
         memcpy(colour_spec, optarg, strlen(optarg));
         initial = get_colour(optarg[0]);
 
         break;
 
       case 'r': /* rules */
+       rule_spec = (char *) malloc(strlen(optarg));
        memcpy(rule_spec, optarg, strlen(optarg));
+
        break;
 
       case 'n': /* times */
@@ -103,6 +100,7 @@ main(int argc, char **argv)
     }
   }
 
+
   /*Check that we have a rule for each colouur */
   assert(strlen(rule_spec) == strlen(colour_spec));
 
@@ -114,20 +112,6 @@ main(int argc, char **argv)
   grid_out();
 
   return 0;
-}
-
-void*
-make_rules(char *spec)
-{
-  panic("Implement me!");
-  return rules;
-}
-
-void*
-make_palette(unsigned char *colours)
-{
-  panic("Implement me!");
-  return palette;
 }
 
 void*
@@ -147,8 +131,6 @@ make_grid(uint32_t w, uint32_t h, colour_t c)
 
   return &grid;
 }
-
-
 
 void*
 make_ant(uint32_t xini, uint32_t yini)

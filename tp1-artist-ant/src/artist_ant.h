@@ -22,6 +22,14 @@ typedef struct {
 
 void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations);
 
+void* make_rules(char *spec);
+
+void* make_palette(unsigned char *colours);
+
+void* make_grid(uint32_t w, uint32_t h, colour_t c);
+
+void* make_ant(uint32_t xini, uint32_t yini);
+
 void grid_out();
 
 uint32_t as_int(void *arg, uint32_t from, uint32_t to);

@@ -2,21 +2,19 @@
 #define __ARTIST_ANT_H__
 
 #include <unistd.h>
-
-#define NORTH ((uint32_t) 0)
-#define SOUTH ((uint32_t) 1)
-#define EAST ((uint32_t) 2)
-#define WEST ((uint32_t) 3)
+typedef enum colour {RED, GREEN, BLUE, YELLOW, BLACK, WHITE} colour_t;
+typedef enum orientation {NORTH, SOUTH, EAST, WEST} orientation_t;
+typedef enum rotatioin {LEFT, RIGHT} rotation_t;
 
 typedef struct {
     uint32_t x, y;
-    uint32_t o;
+    orientation_t o;
 } ant_t;
 
 typedef struct {
     uint32_t width;
     uint32_t height;
-    uint32_t **grid;
+    colour_t **grid;
 } square_grid_t;
 
 typedef struct {

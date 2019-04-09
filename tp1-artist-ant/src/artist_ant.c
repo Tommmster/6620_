@@ -15,18 +15,14 @@ static ant_t ant;
 static palette_t palette;
 
 static uint32_t w, h, n;
-static char initial;
+static colour_t initial;
 
 void show_version();
 
 void show_help(char *);
 
-/*
-* Dimensiones de la grilla (w x h)
-* Paleta de colores (R|G|B|W|Y)
-* Reglas (L|R ..)
-* Número de iteraciones (entero positivo)
-*/
+static colour_t get_colour(char c);
+
 int
 main(int argc, char **argv)
 {
@@ -42,7 +38,7 @@ main(int argc, char **argv)
     {"version", 0, 0, 'v'},
     {0, 0, 0, 0}
   };
-  static char *rule_spec, *grid_spec;
+  static char *rule_spec, *grid_spec, *colour_spec;
 
   int opt, s, len = 0;
   int long_index = 0;
@@ -59,17 +55,23 @@ main(int argc, char **argv)
 
         break;
       case 'p':
-        colours = make_palette((unsigned char *)optarg);
-        initial = optarg[0];
+        memcpy(colour_spec, optarg, strlen(optarg));
+        initial = get_colour(optarg[0]);
 
         break;
 
       case 'r':
-        memcpy(rule_spec, optarg, strlen(optarg));
-        break;
+       memcpy(rule_spec, optarg, strlen(optarg));
+       break;
 
       case 'n':
         n = atoi(optarg);
+
+        if (n < 0){
+          fprintf(stderr, "Must be non negative: %d",  n);
+          show_help(argv[0]);
+          exit(1);
+        }
         break;
 
       case 'h':
@@ -86,16 +88,10 @@ main(int argc, char **argv)
         exit(1);
     }
   }
-
-  printf("Grid %dx%d\n", grid_width, grid_height);
-  printf("Initial colour %c\n", initial);
-
-  printf("Rules %s\n",rule_spec);
-
   square_grid = make_grid(grid_width, grid_height, initial);
   artist_ant = make_ant(w/2, h/2);
 
-  paint(artist_ant, square_grid, colours, rule_spec, n);
+  paint(artist_ant, square_grid, colour_spec, rule_spec, n);
 
   grid_out();
 
@@ -109,17 +105,17 @@ paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations)
 }
 
 void*
-make_grid(uint32_t w, uint32_t h, uint32_t c)
+make_grid(uint32_t w, uint32_t h, colour_t c)
 {
   grid.width = w;
   grid.height = h;
 
   grid.grid = (uint32_t **) malloc( w * sizeof(uint32_t*));
 
-  for (int i=0; i < w; i++){
-    grid.grid[i] = (uint32_t *) malloc ( h * sizeof(uint32_t));
+  for (int i=0; i < w; i++) {
+    grid.grid[i] = (uint32_t *) malloc ( h * sizeof(colour_t));
     for (int j = 0; j < h; j++) {
-      memset(&grid.grid[i][j], c, sizeof(uint32_t));
+      grid.grid[i][j] =  c;
     }
   }
 
@@ -144,10 +140,10 @@ make_ant(uint32_t xini, uint32_t yini)
 
 void grid_out()
 {
-  char c;
-  printf("P3\n");
-  printf("%d %d\n", grid_width, grid_height);
-  printf("255\n");
+  colour_t c;
+  fprintf(stdout, "P3\n");
+  fprintf(stdout, "%d %d\n", grid_width, grid_height);
+  fprintf(stdout, "255\n");
 
   for (unsigned int i = 0;  i < grid_width; i++) {
     for (unsigned int j = 0;  j < grid_height; j++) {
@@ -155,22 +151,22 @@ void grid_out()
       c = grid.grid[i][j];
 
       switch(c) {
-        case 'R':
+        case RED:
           printf("%d %-3d %-3d ", 255, 0, 0);
           break;
-        case 'G':
+        case GREEN:
           printf("%-3d %d %-3d ", 0, 255, 0);
           break;
-        case 'B':
+        case BLUE:
           printf("%-3d %-3d %d ", 0, 0, 255);
           break;
-        case 'W':
+        case WHITE:
           printf("%d %d %d ", 255, 255, 255);
           break;
-        case 'Y':
+        case YELLOW:
           printf("%d %d %-3d ", 255, 255, 0);
           break;
-        case 'N':
+        case BLACK:
           printf("%-3d %-3d %-3d ", 0, 0, 0);
           break;
         default:
@@ -194,6 +190,7 @@ as_int(void *arg, uint32_t from, uint32_t to)
   uint32_t n = 0;
 
   while (s < t) {
+    assert(*s >= '0' && *s <= '9');
     n = (*s - '0') + n * 10;
     s ++;
   }
@@ -216,5 +213,17 @@ void
 show_version()
 {
   printf("v0.0.0\n");
+}
+
+colour_t
+get_colour(char c)
+{
+  static char * index = "RGBYNW";
+
+  char *p = strchr(index, c);
+
+  assert (p != NULL);
+
+  return (p - index);
 }
 

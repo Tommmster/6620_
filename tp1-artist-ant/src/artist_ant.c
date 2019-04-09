@@ -204,13 +204,13 @@ as_int(void *arg, uint32_t from, uint32_t to)
 
 void
 show_help(char *p) {
-    printf("%s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
-    printf("-g --grid: wxh\n");
-    printf("-p --palette: Combination of R|G|B|Y|N|W\n");
-    printf("-r --rules: Combination of L|R\n");
-    printf("-n --times: Iterations\n");
-    printf("-h --help: Print this message and exit\n");
-    printf("-v --verbose: Version number\n");
+    printf("  %s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
+    printf("  -g --grid: wxh\n");
+    printf("  -p --palette: Combination of R|G|B|Y|N|W\n");
+    printf("  -r --rules: Combination of L|R\n");
+    printf("  -n --times: Iterations\n");
+    printf("  -h --help: Print this message and exit\n");
+    printf("  -v --verbose: Version number\n");
 }
 
 void

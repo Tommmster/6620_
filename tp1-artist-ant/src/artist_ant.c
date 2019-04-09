@@ -7,12 +7,19 @@
 #include "artist_ant.h"
 
 
+#define panic(s)       \
+  do {                 \
+    fprintf(stderr, "%s: %s\n", __FUNCTION__, s);\
+    exit(1);            \
+  } while(0);
+
 static uint32_t grid_width;
 static uint32_t grid_height;
 static square_grid_t grid;
 
 static ant_t ant;
-static palette_t palette;
+static void* palette;
+static void* rules;
 
 static uint32_t w, h, n;
 static colour_t initial;
@@ -28,7 +35,8 @@ main(int argc, char **argv)
 {
   ant_t *artist_ant;
   square_grid_t *square_grid;
-  palette_t *colours;
+  void *colours;
+
   static struct option long_options[] = {
     {"grid",  1, 0, 'g'},
     {"palette", 1, 0, 'p'},
@@ -101,9 +109,23 @@ main(int argc, char **argv)
 void*
 paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations)
 {
+  panic ("Implement me!");
   return grid;
 }
 
+void*
+make_rules(char *spec)
+{
+  panic("Implement me!");
+  return rules;
+}
+
+void*
+make_palette(unsigned char *colours)
+{
+  panic("Implement me!");
+  return palette;
+}
 void*
 make_grid(uint32_t w, uint32_t h, colour_t c)
 {
@@ -122,11 +144,7 @@ make_grid(uint32_t w, uint32_t h, colour_t c)
   return &grid;
 }
 
-void*
-make_palette(unsigned char *colours)
-{
-  return NULL;
-}
+
 
 void*
 make_ant(uint32_t xini, uint32_t yini)

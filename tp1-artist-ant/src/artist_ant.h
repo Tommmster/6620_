@@ -2,9 +2,12 @@
 #define __ARTIST_ANT_H__
 
 #include <unistd.h>
-typedef enum colour {RED, GREEN, BLUE, YELLOW, BLACK, WHITE} colour_t;
-typedef enum orientation {NORTH, SOUTH, EAST, WEST} orientation_t;
-typedef enum rotatioin {LEFT, RIGHT} rotation_t;
+
+#include "ant_constants.h"
+
+typedef enum colour {RED=CR, GREEN = CG, BLUE = CB, YELLOW = CY, BLACK = CN, WHITE = CW} colour_t;
+typedef enum orientation {NORTH = ON, SOUTH = OS, EAST = OE, WEST = OW} orientation_t;
+typedef enum rotation {LEFT = RL, RIGHT = RR} rotation_t;
 
 typedef struct {
     uint32_t x, y;
@@ -17,14 +20,9 @@ typedef struct {
     colour_t **grid;
 } square_grid_t;
 
-typedef struct {
-    unsigned char *palette;
-    uint32_t i;
-} palette_t;
-
 void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations);
 
-void* make_grid(uint32_t , uint32_t, uint32_t );
+void* make_grid(uint32_t , uint32_t, colour_t);
 
 void* make_palette(unsigned char*);
 

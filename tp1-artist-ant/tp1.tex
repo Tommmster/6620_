@@ -1,8 +1,23 @@
 \documentclass{article}
 
-\title{Trabajo práctico 1: Conjunto de instrucciones MIPS}
-\begin{document}
+%\usepackage[spanish]{babel}
+%\usepackage[ansinew]{inputenc}
+%% graficos
+%\usepackage[pdftex]{graphicx}
 
+%\usepackage{graphicx}
+%\usepackage[ansinew]{inputenc}
+%\usepackage[spanish]{babel}
+%\usepackage{multirow}
+%\usepackage{fancyhdr}
+%\usepackage{url}
+%\usepackage{amsmath}
+
+
+\author{}
+\title{Trabajo práctico 1: Conjunto de instrucciones MIPS}
+
+\begin{document}
 \date{}
 \maketitle
 
@@ -22,12 +37,13 @@ Se dispone de un area bidimensional dividida en celdas cuyo tamaño es configura
 \footnote{El color inicial de todo el espacio es el primero de la paleta especificada}. En la posición central se encuentra una
 hormiga, orientada hacia el norte\footnote{En el formato de salida, hacia el encabezado del archivo}, que dispone de una paleta de colores. 
 Al enccontrarse sobre una celda, la hormiga cambia su orientación rotando hacia la izquierda (\texttt{L}) o derecha (\texttt{R}) según el 
-color sobre el que se encuentre, pinta la celda utilizando el siguiente color de la paleta \footnote{El primer color a utilizar es el segundo color de la paleta} y se mueve a la celda que tiene adelante. 
-Esta secuencia de acciones se repite un número de veces predeterminado.
+color sobre el que se encuentre, pinta la celda utilizando el siguiente color de la paleta \footnote{El primer color a utilizar es el segundo 
+color de la paleta} y se mueve a la celda que tiene adelante. Esta secuencia de acciones se repite un número de veces predeterminado.
 Finalmente se escribe el estado de la grilla por la salida estandar, en formato PPM.
 
 La paleta de colores contiene una combinación de los siguientes colores: 
 Rojo (\texttt{R}), Azul (\texttt{B}), Verde (\texttt{G}), Amarillo (\texttt{Y}), Blanco (\texttt{W}) y Negro (\texttt{N}).
+
 
 \section{El programa}
 
@@ -51,7 +67,11 @@ void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t times);
 \end{verbatim}
 \end{small}
 
-Asimismo, la implementación de la paleta de colores y el conjunto de reglas debe ser realizado como parte de la entrega.
+Asimismo, la implementación de la paleta de colores y el conjunto de reglas debe ser realizado como parte de la entrega. Existen dos funciones
+encargadas de interpretar dichos parámetros - \texttt{make\_palette(char *)}, \texttt{make\_grid(char *)} - que en su versión \textit{default}
+detienen la ejecución del programa.
+
+Dentro del archivo \texttt{ant\_constants.h} contiene constantes predeterminadas para las orientaciones, rotaciones y colores. 
 
 Como parte de la entrega se pide escribir dos versiones de este programa. La primera, escrita íntegramente en \texttt{C}, completando
 el esqueleto. La segunda versión, implementando la función \texttt{paint} en assembly MIPS.

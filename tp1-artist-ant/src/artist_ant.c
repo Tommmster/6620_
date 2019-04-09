@@ -4,8 +4,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "artist_ant.h"
 
+#include "ant_engine.h"
+#include "artist_ant.h"
 
 #define panic(s)       \
   do {                 \
@@ -33,10 +34,6 @@ static colour_t get_colour(char c);
 int
 main(int argc, char **argv)
 {
-  ant_t *artist_ant;
-  square_grid_t *square_grid;
-  void *colours;
-
   static struct option long_options[] = {
     {"grid",  1, 0, 'g'},
     {"palette", 1, 0, 'p'},
@@ -49,30 +46,37 @@ main(int argc, char **argv)
   static char *rule_spec, *grid_spec, *colour_spec;
 
   int opt, s, len = 0;
+  char *dim_separator;
   int long_index = 0;
+
+  ant_t *artist_ant;
+  square_grid_t *square_grid;
 
   while ((opt = getopt_long(argc, argv, "g:p:r:n:hv", long_options, &long_index)) != -1) {
 
     switch(opt) {
-      case 'g':
+      case 'g': /* grid */
+        dim_separator = strchr(optarg, 'x');
+        assert(dim_separator != NULL);
+
+        s = (unsigned int) (dim_separator - optarg);
         len = strlen(optarg);
-        s = (unsigned int) (strchr(optarg, 'x') - optarg);
 
         grid_width = as_int(optarg, 0, s);
         grid_height = as_int(optarg, s+1, len);
 
         break;
-      case 'p':
+      case 'p': /* palette */
         memcpy(colour_spec, optarg, strlen(optarg));
         initial = get_colour(optarg[0]);
 
         break;
 
-      case 'r':
+      case 'r': /* rules */
        memcpy(rule_spec, optarg, strlen(optarg));
        break;
 
-      case 'n':
+      case 'n': /* times */
         n = atoi(optarg);
 
         if (n < 0){
@@ -82,20 +86,26 @@ main(int argc, char **argv)
         }
         break;
 
-      case 'h':
+      case 'h': /* help */
         show_help(argv[0]);
         exit(0);
         break;
 
-      case 'v':
+      case 'v': /* version */
         show_version();
         exit(0);
         break;
 
       default:
+        fprintf(stderr, "Unrecognized option %c\n", opt );
+        show_help(argv[0]);
         exit(1);
     }
   }
+
+  /*Check that we have a rule for each colouur */
+  assert(strlen(rule_spec) == strlen(colour_spec));
+
   square_grid = make_grid(grid_width, grid_height, initial);
   artist_ant = make_ant(w/2, h/2);
 
@@ -104,13 +114,6 @@ main(int argc, char **argv)
   grid_out();
 
   return 0;
-}
-
-void*
-paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations)
-{
-  panic ("Implement me!");
-  return grid;
 }
 
 void*
@@ -126,6 +129,7 @@ make_palette(unsigned char *colours)
   panic("Implement me!");
   return palette;
 }
+
 void*
 make_grid(uint32_t w, uint32_t h, colour_t c)
 {

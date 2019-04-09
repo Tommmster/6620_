@@ -17,7 +17,9 @@ static palette_t palette;
 static uint32_t w, h, n;
 static char initial;
 
+void show_version();
 
+void show_help(char *);
 
 /*
 * Dimensiones de la grilla (w x h)
@@ -71,7 +73,7 @@ main(int argc, char **argv)
         break;
 
       case 'h':
-        show_help();
+        show_help(argv[0]);
         exit(0);
         break;
 
@@ -154,22 +156,22 @@ void grid_out()
 
       switch(c) {
         case 'R':
-          printf("%d %3d %3d ", 255, 0, 0);
+          printf("%d %-3d %-3d ", 255, 0, 0);
           break;
         case 'G':
-          printf("%3d %d %3d ", 0, 255, 0);
+          printf("%-3d %d %-3d ", 0, 255, 0);
           break;
         case 'B':
-          printf("%3d %3d %d ", 0, 0, 255);
+          printf("%-3d %-3d %d ", 0, 0, 255);
           break;
         case 'W':
           printf("%d %d %d ", 255, 255, 255);
           break;
         case 'Y':
-          printf("%d %d %3d ", 255, 255, 0);
+          printf("%d %d %-3d ", 255, 255, 0);
           break;
         case 'N':
-          printf("%3d %3d %3d ", 0, 0, 0);
+          printf("%-3d %-3d %-3d ", 0, 0, 0);
           break;
         default:
           fprintf(stderr, "Invalid: %c\n", c);
@@ -200,8 +202,14 @@ as_int(void *arg, uint32_t from, uint32_t to)
 }
 
 void
-show_help() {
-   printf("help");
+show_help(char *p) {
+    printf("%s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
+    printf("-g --grid: wxh\n");
+    printf("-p --palette: Combination of R|G|B|Y|N|W\n");
+    printf("-r --rules: Combination of L|R\n");
+    printf("-n --times: Iterations\n");
+    printf("-h --help: Print this message and exit\n");
+    printf("-v --verbose: Version number\n");
 }
 
 void

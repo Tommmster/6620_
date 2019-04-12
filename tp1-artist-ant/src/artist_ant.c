@@ -133,9 +133,7 @@ main(int argc, char **argv)
   check_required("Rule spec is required", rule_spec);
   check_required("Colour spec is required", colour_spec);
 
-
-  /*Check that we have a rule for each colour */
-  assert(strlen(rule_spec) == strlen(colour_spec));
+  check_required("Rule and colour length should match", strlen(rule_spec) == strlen(colour_spec));
 
   square_grid = make_grid(grid_width, grid_height, initial);
   artist_ant = make_ant(grid_width / 2, grid_height / 2);

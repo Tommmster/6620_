@@ -44,7 +44,7 @@ Finalmente se escribe el estado de la grilla por la salida estandar, en formato 
 La paleta de colores contiene una combinación de los siguientes colores: 
 Rojo (\texttt{R}), Azul (\texttt{B}), Verde (\texttt{G}), Amarillo (\texttt{Y}), Blanco (\texttt{W}) y Negro (\texttt{N}).
 
-
+\pagebreak
 \section{El programa}
 
 El programa debe tomar las siguientes opciones
@@ -86,7 +86,19 @@ optimizaciones prematuras. Por ejemplo, utilizando el \textit{stack} para variab
 de código C a \textit{assembly}. Posteriores versiones pueden implementar mejoras como \underline{tablas de saltos},
 variables locales en registros o variaciones al ABI.
 
+\pagebreak
 \section{Ejemplos}
+
+    \begin{verbatim}
+    ./tp1 --help
+      ./tp1 -g <dimensions> -p <colors> -r <rules> -t <n>
+      -g --grid: wxh
+      -p --palette: Combination of R|G|B|Y|N|W
+      -r --rules: Combination of L|R
+      -n --times: Iterations
+      -h --help: Print this message and exit
+      -v --verbose: Version number
+    \end{verbatim}
 
     \begin{verbatim}
     $ tp1 --grid 3x3 --palette "R|G|B" --rules "L|R|L" --times 3
@@ -129,10 +141,7 @@ variables locales en registros o variaciones al ABI.
 \section{Recursos}
 
 \begin{itemize}
-\item ABI de la cátedra
-\item Código inicial
-\item HP - The hardware software interface
-\item HP - CAAQA
+\item Formato PPM: http://netpbm.sourceforge.net/doc/ppm.html
 \end{itemize}
 
 \section{Condiciones de entrega}

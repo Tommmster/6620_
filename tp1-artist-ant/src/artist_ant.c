@@ -8,22 +8,49 @@
 #include "ant_engine.h"
 #include "artist_ant.h"
 
-static uint32_t grid_width;
-static uint32_t grid_height;
+static uint32_t grid_width = 0;
+static uint32_t grid_height = 0;
 static square_grid_t grid;
 
 static ant_t ant;
 static void* palette;
 static void* rules;
 
-static uint32_t w, h, n;
+static int32_t iterations = 0 ;
 static colour_t initial;
 
-void show_version();
+static void
+show_warn(char *p)
+{
+     fprintf(stderr, " %s\n", p);
+}
+static void
+show_help(char *p) {
+    fprintf(stderr, "  %s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
+    fprintf(stderr, "  -g --grid: wxh\n");
+    fprintf(stderr, "  -p --palette: Combination of R|G|B|Y|N|W\n");
+    fprintf(stderr, "  -r --rules: Combination of L|R\n");
+    fprintf(stderr, "  -n --times: Iterations\n");
+    fprintf(stderr, "  -h --help: Print this message and exit\n");
+    fprintf(stderr, "  -v --verbose: Version number\n");
+}
 
-void show_help(char *);
+static void
+show_version()
+{
+  printf("v0.0.0\n");
+}
 
 static colour_t get_colour(char c);
+
+#define check_required(w, optarg)      \
+  do {                                 \
+    if (!(optarg)) {                   \
+      show_warn((w));                  \
+      show_help(argv[0]);              \
+      exit(1);                         \
+    }                                  \
+  } while(0)
 
 int
 main(int argc, char **argv)
@@ -32,21 +59,21 @@ main(int argc, char **argv)
     {"grid",  1, 0, 'g'},
     {"palette", 1, 0, 'p'},
     {"rules",  1, 0, 'r'},
-    {"iterations",  1, 0, 'n'},
+    {"times",  1, 0, 't'},
     {"help", 0, 0, 'h'},
     {"version", 0, 0, 'v'},
     {0, 0, 0, 0}
   };
+  static int long_index = 0;
   static char *rule_spec, *grid_spec, *colour_spec;
 
   int opt, s, len = 0;
   char *dim_separator;
-  int long_index = 0;
 
   ant_t *artist_ant;
   square_grid_t *square_grid;
 
-  while ((opt = getopt_long(argc, argv, "g:p:r:n:hv", long_options, &long_index)) != -1) {
+  while ((opt = getopt_long(argc, argv, "g:p:r:t:hv", long_options, &long_index)) != -1) {
 
     switch(opt) {
       case 'g': /* grid */
@@ -73,11 +100,11 @@ main(int argc, char **argv)
 
        break;
 
-      case 'n': /* times */
-        n = atoi(optarg);
+      case 't': /* times */
+        iterations = atoi(optarg);
 
-        if (n < 0){
-          fprintf(stderr, "Must be non negative: %d",  n);
+        if (iterations < 0){
+          fprintf(stderr, "Must be non negative: %d",  iterations);
           show_help(argv[0]);
           exit(1);
         }
@@ -99,15 +126,21 @@ main(int argc, char **argv)
         exit(1);
     }
   }
+  check_required("Grid spec (h) is required", grid_height > 0);
+  check_required("Grid spec (w) is required", grid_width > 0);
+  check_required("Iterations is required", iterations > 0);
+
+  check_required("Rule spec is required", rule_spec);
+  check_required("Colour spec is required", colour_spec);
 
 
-  /*Check that we have a rule for each colouur */
+  /*Check that we have a rule for each colour */
   assert(strlen(rule_spec) == strlen(colour_spec));
 
   square_grid = make_grid(grid_width, grid_height, initial);
-  artist_ant = make_ant(w/2, h/2);
+  artist_ant = make_ant(grid_width / 2, grid_height / 2);
 
-  paint(artist_ant, square_grid, colour_spec, rule_spec, n);
+  paint(artist_ant, square_grid, colour_spec, rule_spec, iterations);
 
   grid_out();
 
@@ -202,22 +235,7 @@ as_int(void *arg, uint32_t from, uint32_t to)
   return n;
 }
 
-void
-show_help(char *p) {
-    printf("  %s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
-    printf("  -g --grid: wxh\n");
-    printf("  -p --palette: Combination of R|G|B|Y|N|W\n");
-    printf("  -r --rules: Combination of L|R\n");
-    printf("  -n --times: Iterations\n");
-    printf("  -h --help: Print this message and exit\n");
-    printf("  -v --verbose: Version number\n");
-}
 
-void
-show_version()
-{
-  printf("v0.0.0\n");
-}
 
 colour_t
 get_colour(char c)

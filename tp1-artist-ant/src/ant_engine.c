@@ -4,12 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define panic(s)       \
-  do {                 \
-    fprintf(stderr, "%s: %s\n", __FUNCTION__, s);\
-    exit(1);            \
-  } while(0);
-
 
 void*
 paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations)
@@ -28,6 +22,9 @@ make_rules(char *spec)
 void*
 make_palette(unsigned char *colours)
 {
+  char *s = "R|W";
+
+  char *r = "01";
   panic("Implement me!");
   return NULL;
 }

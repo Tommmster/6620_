@@ -5,13 +5,14 @@
 %% graficos
 %\usepackage[pdftex]{graphicx}
 
-%\usepackage{graphicx}
-%\usepackage[ansinew]{inputenc}
-%\usepackage[spanish]{babel}
-%\usepackage{multirow}
-%\usepackage{fancyhdr}
-%\usepackage{url}
-%\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{amsmath}
 
 
 \author{}
@@ -33,12 +34,11 @@ función desde código C utilizando el compilador \texttt{GCC}
 El trabajo práctico consiste en implementar un problema denominado \textbf{"La hormiga artista"}. El mismo plantea un recorrido
 sobre un espacio de dos dimensiones, donde el mismo está definido por reglas predefinidas.
 
-Se dispone de un area bidimensional dividida en celdas cuyo tamaño es configurable, donde cada celda está pintada de un color 
-\footnote{El color inicial de todo el espacio es el primero de la paleta especificada}. En la posición central se encuentra una
+Se dispone de un area bidimensional dividida en celdas cuyo tamaño es configurable, donde cada celda está pintada de un color\footnote{El color inicial de todo el espacio es el primero de la paleta especificada}. En la posición central se encuentra una
 hormiga, orientada hacia el norte\footnote{En el formato de salida, hacia el encabezado del archivo}, que dispone de una paleta de colores. 
-Al enccontrarse sobre una celda, la hormiga cambia su orientación rotando hacia la izquierda (\texttt{L}) o derecha (\texttt{R}) según el 
-color sobre el que se encuentre, pinta la celda utilizando el siguiente color de la paleta \footnote{El primer color a utilizar es el segundo 
-color de la paleta} y se mueve a la celda que tiene adelante. Esta secuencia de acciones se repite un número de veces predeterminado.
+Al encontrarse sobre una celda, la hormiga cambia su orientación rotando hacia la izquierda (\texttt{L}) o derecha (\texttt{R}) según el 
+color sobre el que se encuentre, pinta la celda utilizando el color de la paleta que sigue al último usado\footnote{El primer color a utilizar es el segundo 
+color de la paleta} y se mueve a la celda que tiene delante. Esta secuencia de acciones se repite un número determinado de veces.
 Finalmente se escribe el estado de la grilla por la salida estandar, en formato PPM.
 
 La paleta de colores contiene una combinación de los siguientes colores: 
@@ -47,7 +47,7 @@ Rojo (\texttt{R}), Azul (\texttt{B}), Verde (\texttt{G}), Amarillo (\texttt{Y}),
 \pagebreak
 \section{El programa}
 
-El programa debe tomar las siguientes opciones
+El programa debe tomar las siguientes opciones:
 \begin{itemize}
 \item Las dimensiones de la grilla
 \item La paleta de colores
@@ -58,7 +58,7 @@ El programa debe tomar las siguientes opciones
 
 \subsection{Implementación}
 Como punto de partida se provee un esqueleto escrito en C en el cual se encuentran resueltos aspectos como la evaluación de parámetros, 
-algunas estructuras y la impresión final en formato PPM.  Sin embargo, el movimiento de la hormiga a través del
+algunas estructuras y la impresión final en formato PPM (ver Sección \ref{Recursos}).  Sin embargo, el movimiento de la hormiga a través del
 espacio bidimensional debe programarse y tiene la siguiente interfaz:
 
 \begin{small}
@@ -71,14 +71,14 @@ Asimismo, la implementación de la paleta de colores y el conjunto de reglas deb
 encargadas de interpretar dichos parámetros - \texttt{make\_palette(char *)}, \texttt{make\_grid(char *)} - que en su versión \textit{default}
 detienen la ejecución del programa.
 
-Dentro del archivo \texttt{ant\_constants.h} contiene constantes predeterminadas para las orientaciones, rotaciones y colores. 
+En el archivo \texttt{ant\_constants.h} se definen constantes predeterminadas para las orientaciones, rotaciones y colores. 
 
 Como parte de la entrega se pide escribir dos versiones de este programa. La primera, escrita íntegramente en \texttt{C}, completando
 el esqueleto. La segunda versión, implementando la función \texttt{paint} en assembly MIPS.
 
 \subsubsection{Código MIPS}
 Se debe disponer de una implementación de la función \texttt{paint} en código \textit{assembly} MIPS, \underline{que respete el ABI 
-de la cátedra}. Cualquier función llamada desde dicha función debe estar implementada en \textit{assembly}. Si bien es posible llamar i
+de la cátedra}. Cualquier función llamada desde dicha función debe estar implementada en \textit{assembly}. Si bien es posible llamar a
 funciones C desde código assembly, es preferible limitar su uso a funciones de depuración.
 
 Con el fin de obtener un programa \textit{correcto}, se recomienda escribir una versión inicial que no contemple
@@ -110,6 +110,21 @@ variables locales en registros o variaciones al ABI.
     0   0   255 0   255 0   255 0   0 
     255 0   0   255 0   0   255 0   0
     \end{verbatim}
+La imagen resultante sería:
+\begin{center}
+\begin{tikzpicture}
+\draw[step=1cm,gray,thin] (-1,-1) grid (2,2);
+\fill[red](-1,1) rectangle(0,2);
+\fill[red](0,1) rectangle(1,2);
+\fill[red](1,1) rectangle(2,2);
+\fill[blue](-1,0) rectangle(1,1);
+\fill[green](0,0) rectangle(1,1);
+\fill[red](1,0) rectangle(2,1);
+\fill[red](-1,-1) rectangle(0,0);
+\fill[red](0,-1) rectangle(1,0);
+\fill[red](1,-1) rectangle(2,0);
+\end{tikzpicture}
+\end{center}
 
     \begin{verbatim}
     $ tp1 --grid 3x3 --palette Y|N|B --rules L|R|L --times 2
@@ -121,6 +136,21 @@ variables locales en registros o variaciones al ABI.
     0   0   255 0   0   0   255 255 0
     255 255 0   255 255 0   255 255 0
     \end{verbatim}
+La imagen resultante sería:
+\begin{center}
+\begin{tikzpicture}
+\draw[step=1cm,gray,thin] (-1,-1) grid (2,2);
+\fill[yellow](-1,1) rectangle(0,2);
+\fill[yellow](0,1) rectangle(1,2);
+\fill[yellow](1,1) rectangle(2,2);
+\fill[blue](-1,0) rectangle(1,1);
+\fill[black](0,0) rectangle(1,1);
+\fill[yellow](1,0) rectangle(2,1);
+\fill[yellow](-1,-1) rectangle(0,0);
+\fill[yellow](0,-1) rectangle(1,0);
+\fill[yellow](1,-1) rectangle(2,0);
+\end{tikzpicture}
+\end{center}
 
     \begin{verbatim}
     $ tp1 --grid 2x2 --palette N|W --rules R|L --times 1
@@ -132,13 +162,24 @@ variables locales en registros o variaciones al ABI.
     0   0   0   255 255 255
     \end{verbatim}
 
+La imagen resultante sería:
+\begin{center}
+\begin{tikzpicture}
+\draw[step=1cm,gray,thin] (-1,-1) grid (1,1);
+\fill[black](-1,0) rectangle(1,1);
+\fill[black](0,0) rectangle(1,1);
+\fill[black](-1,-1) rectangle(0,0);
+\fill[yellow](0,-1) rectangle(1,0);
+\end{tikzpicture}
+\end{center}
+
 \section{Extras}
 \begin{itemize}
 \item Mediciones de tiempo
 \item Impacto sobre el \textit{cache}
 \end{itemize}
 
-\section{Recursos}
+\section{Recursos}\label{Recursos}
 
 \begin{itemize}
 \item Formato PPM: http://netpbm.sourceforge.net/doc/ppm.html

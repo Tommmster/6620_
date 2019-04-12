@@ -24,7 +24,7 @@ void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterati
 
 void* make_rules(char *spec);
 
-void* make_palette(unsigned char *colours);
+void* make_palette(char *colours);
 
 void* make_grid(uint32_t w, uint32_t h, colour_t c);
 

@@ -140,7 +140,10 @@ main(int argc, char **argv)
   square_grid = make_grid(grid_width, grid_height, initial);
   artist_ant = make_ant(grid_width / 2, grid_height / 2);
 
-  paint(artist_ant, square_grid, colour_spec, rule_spec, iterations);
+  palette = make_palette(colour_spec);
+  rules = make_rules(rule_spec);
+
+  paint(artist_ant, square_grid, palette, rules, iterations);
 
   grid_out();
 

@@ -20,11 +20,8 @@ make_rules(char *spec)
 }
 
 void*
-make_palette(unsigned char *colours)
+make_palette(char *colours)
 {
-  char *s = "R|W";
-
-  char *r = "01";
   panic("Implement me!");
   return NULL;
 }

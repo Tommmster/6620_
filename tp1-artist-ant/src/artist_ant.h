@@ -5,6 +5,8 @@
 
 #include "ant_constants.h"
 
+#define COLOURS "RGBYNW"
+
 typedef enum colour {RED = CR, GREEN = CG, BLUE = CB, YELLOW = CY, BLACK = CN, WHITE = CW} colour_t;
 typedef enum orientation {NORTH = ON, SOUTH = OS, EAST = OE, WEST = OW} orientation_t;
 typedef enum rotation {LEFT = RL, RIGHT = RR} rotation_t;
@@ -19,6 +21,12 @@ typedef struct {
     uint32_t height;
     colour_t **grid;
 } square_grid_t;
+
+typedef struct {
+  colour_t *colours;
+  colour_t (*get_next)(void);
+
+} palette_t;
 
 void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations);
 

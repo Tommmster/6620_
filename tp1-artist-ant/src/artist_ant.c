@@ -7,6 +7,7 @@
 
 #include "ant_engine.h"
 #include "artist_ant.h"
+#include "builders.h"
 
 static uint32_t grid_width = 0;
 static uint32_t grid_height = 0;
@@ -24,6 +25,7 @@ show_warn(char *p)
 {
      fprintf(stderr, " %s\n", p);
 }
+
 static void
 show_help(char *p) {
     fprintf(stderr, "  %s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
@@ -41,7 +43,7 @@ show_version()
   printf("v0.0.0\n");
 }
 
-static colour_t get_colour(char c);
+
 
 #define check_required(w, optarg)      \
   do {                                 \
@@ -237,16 +239,4 @@ as_int(void *arg, uint32_t from, uint32_t to)
 }
 
 
-
-colour_t
-get_colour(char c)
-{
-  static char * index = "RGBYNW";
-
-  char *p = strchr(index, c);
-
-  assert (p != NULL);
-
-  return (p - index);
-}
 

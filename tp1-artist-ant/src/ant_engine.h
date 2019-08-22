@@ -4,13 +4,19 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void* paint(void *ant, void *grid, void *palette, void *rules,  uint32_t iterations);
+#include "ant_types.h"
+#include "builders.h"
 
-#define panic(s)       \
-  do {                 \
-    fprintf(stderr, "%s: %s\n", __FUNCTION__, s);\
-    exit(1);            \
-  } while(0);
+#define adjust(p, v, limit) \
+  do{                       \
+    *(p) = (v) % (limit);   \
+  } while(0)             
+ 
+void *paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn rotation_for_colour, uint32_t iterations);
+
+orientation_t new_orientation(orientation_t orientation, rotation_t rule);
+
+ant_t* move_forward(ant_t* ant, uint32_t width, uint32_t height);
 
 
 #endif /* __ANT_ENGINE_H__ */

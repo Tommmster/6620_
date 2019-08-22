@@ -1,167 +1,147 @@
-#include "ant_engine.h"
-#include "artist_ant.h"
-#include "builders.h"
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
 
-static unsigned int palette_len;
-static unsigned int rules_len;
+#include "ant_engine.h"
+#include "builders.h"
+#include "grid.h"
 
-rotation_t
-rule_for_colour(void* palette, void* rules, colour_t colour) 
-{
-  const rotation_t *therules = (const rotation_t*) rules;
-  const colour_t *colours = (const colour_t*) palette;
+#ifdef USE_TABLES
+typedef void (*step_fn)(ant_t*, uint32_t);
 
-  colour_t *tmp = (colour_t*) colours;
-
-  unsigned int i = 0;
-  
-  for (;i < palette_len; i++){
-    if (colour == colours[i]){
-      return therules[i];
-    }
-  }
-
-  panic("Can't find rule for colour");
+void step_west(ant_t *ant, uint32_t width) {
+  adjust(&ant->x, ant->x - 1, width);
 }
 
-orientation_t 
-new_orientation(orientation_t orientation, rotation_t rule)
-{
-  orientation_t rotation_rules[4][2] = {
-    {WEST,EAST},    /* North */
-    {EAST,WEST},    /* South */
-    {NORTH, SOUTH}, /* East */
-    {SOUTH,NORTH}   /* West */
-  };
-
-  return rotation_rules[orientation][rule];
+void step_east(ant_t *ant, uint32_t width) {
+  adjust(&ant->x, ant->x + 1, width);
 }
 
-ant_t*
-move_forward(ant_t* ant, uint32_t width, uint32_t height) 
+void step_north(ant_t *ant, uint32_t height) {
+  adjust(&ant->y, ant->y - 1, height);
+}
+
+void step_south(ant_t *ant, uint32_t height) {
+  adjust(&ant->y, ant->y + 1, height);
+}
+
+static step_fn allowed_forward[4] = {step_north, step_south, step_east, step_west};
+
+#endif /* USE_TABLES */
+
+void*
+paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotation, uint32_t iterations)
 {
-  #define ADJUST(p, v, limit) \
-    do{                       \
-      *(p) = (v) % (limit);   \
-    } while(0)             
-    
-  switch(ant->o) { 
-    case NORTH:
-      ADJUST(&ant->y, ant->y - 1, height);
-      break;
-    case SOUTH:
-      ADJUST(&ant->y, ant->y + 1, height);
-      break;
-    case EAST:
-      ADJUST(&ant->x, ant->x + 1, width);
-      break;
-    case WEST:
-      ADJUST(&ant->x, ant->x - 1, width);
-      break;
-    default:
-      panic("Unknown orientation");
+  ant_t* ant = (ant_t*) artist_ant;
+  const grid_handler_t *grid_handler = (grid_handler_t *) gridfn;
+
+  uint32_t current_x, current_y, i;
+  orientation_t current_o;
+  colour_t current, next;
+  rotation_t rule;
+
+  for (i = 0; i < iterations ; i++) {
+    /* Ant state */
+    current_x = ant->x;
+    current_y = ant->y;
+    current_o = ant->o;
+
+    current = grid_handler->get(current_x, current_y);
+
+    rule = next_rotation(current);
+    next = next_colour();
+
+    grid_handler->set(current_x, current_y, next);
+
+    //Rotate
+    ant->o = new_orientation(current_o, rule);
+
+    //Move forward
+    ant = move_forward(ant, grid_handler->width, grid_handler->height);
   }
 
   return ant;
 }
 
 
-void*
-paint(void *artist_ant, void *grid, void *palette, void *rules,  uint32_t iterations)
+
+#ifdef USE_TABLES
+ant_t*
+move_forward(ant_t* ant, uint32_t width, uint32_t height)
 {
-  uint32_t i = 0;
 
-  ant_t* ant = (ant_t*) artist_ant;
+  static uint32_t relevant_bounds[4] = {height, height, width, width};
+  uint32_t bound = relevant_bounds[ant->o];
+  step_fn go_forward = allowed_forward[ant->o]
+  go_forward(ant, bound);
 
-  const square_grid_t* sq_grid = (square_grid_t*) grid;
-  const colour_t *colours = (colour_t*) palette;
-  colour_t colour, next_colour;
-
-  for (; i < iterations ; i ++) {
-    /* Ant state */
-    uint32_t current_x = ant->x;
-    uint32_t current_y = ant->y;
-    orientation_t current_o = ant->o;
-    
-    colour = sq_grid->grid[current_x][current_y];
-    next_colour = colours[(i+1) % palette_len];
-
-    /* Get rule for colour */
-    rotation_t next_rotation = rule_for_colour(palette, rules, colour);
-
-    /* 
-    Now we need to update the ant's state 
-    Rotate, then move forward.
-    */
-    ant->o = new_orientation(current_o, next_rotation);
-
-    /* Paint with the next colour */
-    sq_grid ->grid[current_x][current_y] = next_colour;
-
-    ant = move_forward(ant, sq_grid->width, sq_grid->height);
-  }
-  panic ("Implement me!");
-  return grid;
+  return ant;
 }
 
-void*
-make_rules(char *spec)
+orientation_t 
+new_orientation(orientation_t orientation, rotation_t rule)
 {
-  const unsigned int l = strlen(spec);
-  const unsigned int rule_len = l/2 + 1 ;
+  orientation_t rotation_rules[4][2] = {
+    {WEST,EAST},    /* north */
+    {EAST,WEST},    /* south */
+    {NORTH, SOUTH}, /* east */
+    {SOUTH,NORTH}   /* west */
+  };
 
-  rotation_t *rules = (rotation_t *) malloc(rule_len * sizeof(rotation_t));
-  rotation_t each;
-
-  rules_len = rule_len;
-  for (unsigned int i = 0; i < l; i+=2) {
-    if (spec[i] == 'L') {
-      each = LEFT;
-    }
-
-    if (spec[i] == 'R') {
-      each = RIGHT;
-    }
-
-    rules[i/2] = each;
-  }
-
-  return rules;
+  return rotation_rules[orientation][rule];
 }
 
-/**
- * Create a palette
- */
-void*
-make_palette(char *colour_spec)
+#else 
+
+static orientation_t
+decide(rotation_t d, orientation_t go_left, orientation_t go_right)
 {
-  unsigned int i = 0;
+  return d ? go_right : go_left;
+}
 
-  unsigned int l = strlen(colour_spec);
-
-  const unsigned int colours = (l/2) + 1;
-  colour_t *p = (colour_t *) malloc(colours * sizeof(colour_t));
-  colour_t each;
-
-  palette_len = colours;
-  
-  for(; i < l ; i+=2) {
-    each = get_colour(colour_spec[i]);
-
-    if (each < 0) {
-      panic("Invalid colur")
-    }
-
-    p[i/2] = each;
+orientation_t 
+new_orientation(orientation_t orientation, rotation_t rule)
+{
+  switch(orientation) {
+  case NORTH:
+	  decide(rule, WEST, EAST);
+		break;
+  case SOUTH:
+	  decide(rule, EAST, WEST);
+		break;
+  case EAST:
+	  decide(rule, NORTH, SOUTH);
+		break;
+  case WEST:
+	  decide(rule, SOUTH, NORTH);
+		break;
+  default:
+    panicd("Unknown orientation %d", orientation);
+  }
+}
+ant_t*
+move_forward(ant_t* ant, uint32_t width, uint32_t height) 
+{
+   
+  switch(ant->o) { 
+    case NORTH:
+      adjust(&ant->y, ant->y - 1, height);
+      break;
+    case SOUTH:
+      adjust(&ant->y, ant->y + 1, height);
+      break;
+    case EAST:
+      adjust(&ant->x, ant->x + 1, width);
+      break;
+    case WEST:
+      adjust(&ant->x, ant->x - 1, width);
+      break;
+    default:
+      panicd("Unknown orientation %d", ant->o);
   }
 
-  
-  
-  return p;
+  return ant;
 }
+#endif
 

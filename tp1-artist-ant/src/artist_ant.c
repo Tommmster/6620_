@@ -8,13 +8,11 @@
 #include "ant_engine.h"
 #include "artist_ant.h"
 #include "builders.h"
-
-static uint32_t grid_width = 0;
-static uint32_t grid_height = 0;
-static square_grid_t grid;
+#include "grid.h"
+#include "palette.h"
+#include "rules.h"
 
 static ant_t ant;
-static void* palette;
 static void* rules;
 
 static int32_t iterations = 0 ;
@@ -40,10 +38,8 @@ show_help(char *p) {
 static void
 show_version()
 {
-  printf("v0.0.0\n");
+  fprintf(stderr, "v0.0.0\n");
 }
-
-
 
 #define check_required(w, optarg)      \
   do {                                 \
@@ -68,13 +64,18 @@ main(int argc, char **argv)
   };
   static int long_index = 0;
   static char *rule_spec, *grid_spec, *colour_spec;
+  
+  unsigned int grid_width, grid_height, colour_spec_len, rule_spec_len;
 
   int opt, s, len = 0;
   char *dim_separator;
 
   ant_t *artist_ant;
-  square_grid_t *square_grid;
+  grid_handler_t *grid;
 
+  colour_fn next_colour_fn;
+  rule_fn rules;
+  /* Parse arguments */
   while ((opt = getopt_long(argc, argv, "g:p:r:t:hv", long_options, &long_index)) != -1) {
 
     switch(opt) {
@@ -85,20 +86,22 @@ main(int argc, char **argv)
         s = (unsigned int) (dim_separator - optarg);
         len = strlen(optarg);
 
-        grid_width = as_int(optarg, 0, s);
-        grid_height = as_int(optarg, s+1, len);
+        grid_width = atoui32(optarg, 0, s);
+        grid_height = atoui32(optarg, s+1, len);
 
         break;
       case 'p': /* palette */
-        colour_spec = (char *) malloc(strlen(optarg));
+	      colour_spec_len = strlen(optarg);
+        colour_spec = (char *) xmalloc(colour_spec_len);
         memcpy(colour_spec, optarg, strlen(optarg));
         initial = get_colour(optarg[0]);
 
         break;
 
       case 'r': /* rules */
-       rule_spec = (char *) malloc(strlen(optarg));
-       memcpy(rule_spec, optarg, strlen(optarg));
+       rule_spec_len = strlen(optarg);
+       rule_spec = (char *) xmalloc(rule_spec_len);
+       memcpy(rule_spec, optarg, rule_spec_len);
 
        break;
 
@@ -128,6 +131,8 @@ main(int argc, char **argv)
         exit(1);
     }
   }
+
+  /* Check arguments */
   check_required("Grid spec (h) is required", grid_height > 0);
   check_required("Grid spec (w) is required", grid_width > 0);
   check_required("Iterations is required", iterations > 0);
@@ -137,35 +142,20 @@ main(int argc, char **argv)
 
   check_required("Rule and colour length should match", strlen(rule_spec) == strlen(colour_spec));
 
-  square_grid = make_grid(grid_width, grid_height, initial);
-  artist_ant = make_ant(grid_width / 2, grid_height / 2);
+  /* Get stuff in place */
+  
+  grid = make_grid(grid_width, grid_height, initial);
+  next_colour_fn = make_palette(colour_spec, colour_spec_len);
+  rules = make_rules(rule_spec, rule_spec_len, colour_spec, colour_spec_len);
 
-  palette = make_palette(colour_spec);
-  rules = make_rules(rule_spec);
+  artist_ant = make_ant(grid_width >> 1, grid_height >> 1);
+  
+  /* Start the show */
+  paint(artist_ant, grid, next_colour_fn, rules, iterations);
 
-  paint(artist_ant, square_grid, palette, rules, iterations);
-
-  grid_out();
+  grid_out(grid);
 
   return 0;
-}
-
-void*
-make_grid(uint32_t w, uint32_t h, colour_t c)
-{
-  grid.width = w;
-  grid.height = h;
-
-  grid.grid = (uint32_t **) malloc( w * sizeof(uint32_t*));
-
-  for (int i=0; i < w; i++) {
-    grid.grid[i] = (uint32_t *) malloc ( h * sizeof(colour_t));
-    for (int j = 0; j < h; j++) {
-      grid.grid[i][j] =  c;
-    }
-  }
-
-  return &grid;
 }
 
 void*
@@ -178,9 +168,12 @@ make_ant(uint32_t xini, uint32_t yini)
   return &ant;
 }
 
-void grid_out()
+static void grid_out(grid_handler_t* grid)
 {
   colour_t c;
+  unsigned int grid_width = grid -> width;
+  unsigned int grid_height = grid -> height;
+
   fprintf(stdout, "P3\n");
   fprintf(stdout, "%d %d\n", grid_width, grid_height);
   fprintf(stdout, "255\n");
@@ -188,7 +181,7 @@ void grid_out()
   for (unsigned int i = 0;  i < grid_width; i++) {
     for (unsigned int j = 0;  j < grid_height; j++) {
 
-      c = grid.grid[i][j];
+      c = grid->get(i,j);
 
       switch(c) {
         case RED:
@@ -218,25 +211,7 @@ void grid_out()
   }
 }
 
-uint32_t
-as_int(void *arg, uint32_t from, uint32_t to)
-{
 
-  assert(from < to);
-
-  const unsigned char *s = (unsigned char *) arg + from;
-  unsigned char *t = (unsigned char *)(arg + to);
-
-  uint32_t n = 0;
-
-  while (s < t) {
-    assert(*s >= '0' && *s <= '9');
-    n = (*s - '0') + n * 10;
-    s ++;
-  }
-
-  return n;
-}
 
 
 

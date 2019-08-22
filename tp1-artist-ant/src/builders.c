@@ -1,5 +1,9 @@
-#include "builders.h"
 #include <strings.h>
+#include "builders.h"
+
+#ifdef SANITY_CHECK
+#include <assert.h>
+#endif 
 
 colour_t
 get_colour(char c)
@@ -13,4 +17,40 @@ get_colour(char c)
   }
 
   return (p - index);
+}
+
+void*
+xmalloc(size_t len)
+{
+  void *p = malloc(len);
+
+	if (!p) {
+	  panic ("failed");
+	}
+
+	return p;
+}
+
+uint32_t
+atoui32(void *arg, uint32_t from, uint32_t to)
+{
+  const unsigned char *s = (unsigned char *) arg + from;
+  unsigned char *t = (unsigned char *)(arg + to);
+
+  uint32_t parsed = 0;
+
+  #ifdef SANITY_CHECK 
+  assert(from < to);
+  #endif
+
+  while (s < t) {
+    #ifdef SANITY_CHECK 
+    assert(*s >= '0' && *s <= '9');
+    #endif
+
+    parsed = (*s - '0') + parsed * 10;
+    s ++;
+  }
+
+  return parsed;
 }

@@ -68,11 +68,12 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
 
 #ifdef USE_TABLES
 ant_t*
-move_forward(ant_t* ant, uint32_t width, uint32_t height)
+move_forward(ant_t *ant, uint32_t width, uint32_t height)
 {
 
   static uint32_t relevant_bounds[4] = {height, height, width, width};
   uint32_t bound = relevant_bounds[ant->o];
+
   step_fn go_forward = allowed_forward[ant->o]
   go_forward(ant, bound);
 
@@ -103,25 +104,29 @@ decide(rotation_t d, orientation_t go_left, orientation_t go_right)
 orientation_t 
 new_orientation(orientation_t orientation, rotation_t rule)
 {
+  orientation_t updated_orientation;
   switch(orientation) {
   case NORTH:
-	  decide(rule, WEST, EAST);
+	  updated_orientation = decide(rule, WEST, EAST);
 		break;
   case SOUTH:
-	  decide(rule, EAST, WEST);
+	  updated_orientation = decide(rule, EAST, WEST);
 		break;
   case EAST:
-	  decide(rule, NORTH, SOUTH);
+	  updated_orientation = decide(rule, NORTH, SOUTH);
 		break;
   case WEST:
-	  decide(rule, SOUTH, NORTH);
+	  updated_orientation = decide(rule, SOUTH, NORTH);
 		break;
   default:
     panicd("Unknown orientation %d", orientation);
   }
+
+  return updated_orientation;
 }
+
 ant_t*
-move_forward(ant_t* ant, uint32_t width, uint32_t height) 
+move_forward(ant_t *ant, uint32_t width, uint32_t height) 
 {
    
   switch(ant->o) { 

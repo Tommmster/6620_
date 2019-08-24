@@ -49,10 +49,10 @@ show_version()
   #endif
   #ifdef SANITY_CHECK
   fprintf(stderr, "SANITY_CHECK ON\n");
-  #endif 
+  #endif
   #ifdef USE_COL_MAJOR
   fprintf(stderr, "COL_MAJOR ON \n");
-  #endif 
+  #endif
 }
 
 #define check_required(w, optarg)      \

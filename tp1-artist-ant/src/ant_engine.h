@@ -12,7 +12,7 @@
     *(p) = (v) % (limit);   \
   } while(0)             
  
-void *paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn rotation_for_colour, uint32_t iterations);
+void *paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn rotation_for_colour, uint64_t iterations);
 
 orientation_t new_orientation(orientation_t orientation, rotation_t rule);
 

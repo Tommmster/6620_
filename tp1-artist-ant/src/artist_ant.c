@@ -78,7 +78,7 @@ main(int argc, char **argv)
     {0, 0, 0, 0}
   };
 
-  unsigned long long iterations = 0 ;
+  uint64_t iterations = 0 ;
 
   int long_index = 0;
 

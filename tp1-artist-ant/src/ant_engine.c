@@ -31,12 +31,13 @@ static step_fn allowed_forward[4] = {step_north, step_south, step_east, step_wes
 #endif /* USE_TABLES */
 
 void*
-paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotation, uint32_t iterations)
+paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotation, uint64_t iterations)
 {
   ant_t* ant = (ant_t*) artist_ant;
   const grid_handler_t *grid_handler = (grid_handler_t *) gridfn;
 
-  uint32_t current_x, current_y, i;
+  uint64_t i;
+  uint32_t current_x, current_y;
   orientation_t current_o;
   colour_t current, next;
   rotation_t rule;

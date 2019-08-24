@@ -2,6 +2,7 @@
 #define __ANT_TYPES_H__
 
 #include <unistd.h>
+#include <stdint.h>
 #include "ant_constants.h"
 
 #define COLOURS "RGBYNW"

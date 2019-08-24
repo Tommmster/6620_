@@ -8,6 +8,10 @@
 
 #define all_passed() printf("[%s] All tests OK\n", __FILE__);
 
+#ifndef TEST
+#error "Use -DTEST and a specific test to run"
+#endif
+
 #ifdef GRID_TEST
 int
 main(void)

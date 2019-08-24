@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <errno.h>
+#include <limits.h>
 
 #include "ant_engine.h"
 #include "artist_ant.h"
@@ -13,10 +15,8 @@
 #include "rules.h"
 
 static ant_t ant;
-static void* rules;
 
-static int32_t iterations = 0 ;
-static colour_t initial;
+static FILE * output;
 
 static void
 show_warn(char *p)
@@ -25,20 +25,34 @@ show_warn(char *p)
 }
 
 static void
-show_help(char *p) {
-    fprintf(stderr, "  %s -g <dimensions> -p <colors> -r <rules> -t <n>\n", p);
+show_help(char *msg) {
+    fprintf(stderr, "  %s -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>\n", msg);
     fprintf(stderr, "  -g --grid: wxh\n");
     fprintf(stderr, "  -p --palette: Combination of R|G|B|Y|N|W\n");
     fprintf(stderr, "  -r --rules: Combination of L|R\n");
-    fprintf(stderr, "  -n --times: Iterations\n");
+    fprintf(stderr, "  -t --times: Iterations. If negative, it's complement will be used.\n");
     fprintf(stderr, "  -h --help: Print this message and exit\n");
     fprintf(stderr, "  -v --verbose: Version number\n");
+
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Compile with -DSANITY_CHECK to enable runtime checks\n");
+    fprintf(stderr, "Compile with -DUSE_TABLES to execute ant operations in separate functions\n");
+    fprintf(stderr, "Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order\n");
 }
 
 static void
 show_version()
 {
-  fprintf(stderr, "v0.0.0\n");
+  fprintf(stderr, "v1.0\n");
+  #ifdef USE_TABLES
+  fprintf(stderr, "USE_TABLES ON\n");
+  #endif
+  #ifdef SANITY_CHECK
+  fprintf(stderr, "SANITY_CHECK ON\n");
+  #endif 
+  #ifdef USE_COL_MAJOR
+  fprintf(stderr, "COL_MAJOR ON \n");
+  #endif 
 }
 
 #define check_required(w, optarg)      \
@@ -58,40 +72,61 @@ main(int argc, char **argv)
     {"palette", 1, 0, 'p'},
     {"rules",  1, 0, 'r'},
     {"times",  1, 0, 't'},
+    {"output", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
     {"version", 0, 0, 'v'},
     {0, 0, 0, 0}
   };
-  static int long_index = 0;
-  static char *rule_spec, *grid_spec, *colour_spec;
-  
-  unsigned int grid_width, grid_height, colour_spec_len, rule_spec_len;
 
-  int opt, s, len = 0;
+  unsigned long long iterations = 0 ;
+
+  int long_index = 0;
+
+  char *rule_spec = 0 , *grid_spec = 0, *colour_spec = 0;
+  char *end;
+  
+  uint32_t grid_width, grid_height;
+  size_t colour_spec_len, rule_spec_len, grid_spec_len;
+
+  int opt, s;
   char *dim_separator;
 
   ant_t *artist_ant;
   grid_handler_t *grid;
 
+  colour_t initial;
   colour_fn next_colour_fn;
   rule_fn rules;
+
   /* Parse arguments */
-  while ((opt = getopt_long(argc, argv, "g:p:r:t:hv", long_options, &long_index)) != -1) {
+  while ((opt = getopt_long(argc, argv, "g:p:r:t:o:hv", long_options, &long_index)) != -1) {
 
     switch(opt) {
+      case 'o': /* output */
+        if (strcmp(optarg, "-") != 0) {
+          output = fopen(optarg,"w");
+
+          if (!output) {
+            fprintf(stderr, "Unable to open output file. errno %d", errno);
+            exit(2);
+          }
+
+          break;
+        }
+     
       case 'g': /* grid */
         dim_separator = strchr(optarg, 'x');
         assert(dim_separator != NULL);
 
         s = (unsigned int) (dim_separator - optarg);
-        len = strlen(optarg);
+        grid_spec_len = strlen(optarg);
 
         grid_width = atoui32(optarg, 0, s);
-        grid_height = atoui32(optarg, s+1, len);
+        grid_height = atoui32(optarg, s+1, grid_spec_len);
 
         break;
       case 'p': /* palette */
-	      colour_spec_len = strlen(optarg);
+        colour_spec_len = strlen(optarg);
         colour_spec = (char *) xmalloc(colour_spec_len);
         memcpy(colour_spec, optarg, strlen(optarg));
         initial = get_colour(optarg[0]);
@@ -106,15 +141,20 @@ main(int argc, char **argv)
        break;
 
       case 't': /* times */
-        iterations = atoi(optarg);
+        errno = 0;
+        iterations = strtoull(optarg, &end, 10);
 
-        if (iterations < 0){
-          fprintf(stderr, "Must be non negative: %d",  iterations);
-          show_help(argv[0]);
+        if (ULLONG_MAX == iterations && ERANGE == errno) {
+          show_warn("<times> arg out of range.");
           exit(1);
         }
-        break;
 
+        if (optarg == end) {
+          show_warn("Can't parse <times> arg. No digits found");
+          exit(1);
+        }
+
+        break;
       case 'h': /* help */
         show_help(argv[0]);
         exit(0);
@@ -140,7 +180,7 @@ main(int argc, char **argv)
   check_required("Rule spec is required", rule_spec);
   check_required("Colour spec is required", colour_spec);
 
-  check_required("Rule and colour length should match", strlen(rule_spec) == strlen(colour_spec));
+  check_required("Rule and colour length should match", rule_spec_len == colour_spec_len);
 
   /* Get stuff in place */
   
@@ -174,44 +214,45 @@ static void grid_out(grid_handler_t* grid)
   unsigned int grid_width = grid -> width;
   unsigned int grid_height = grid -> height;
 
-  fprintf(stdout, "P3\n");
-  fprintf(stdout, "%d %d\n", grid_width, grid_height);
-  fprintf(stdout, "255\n");
+  fprintf(output, "P3\n");
+  fprintf(output, "%d %d\n", grid_width, grid_height);
+  fprintf(output, "255\n");
 
+#ifdef USE_COL_MAJOR
+  for (unsigned int j = 0;  j < grid_height; j++) {
+    for (unsigned int i = 0;  i < grid_width; i++) {
+#else
   for (unsigned int i = 0;  i < grid_width; i++) {
     for (unsigned int j = 0;  j < grid_height; j++) {
-
+#endif
       c = grid->get(i,j);
 
       switch(c) {
-        case RED:
-          printf("%d %-3d %-3d ", 255, 0, 0);
-          break;
-        case GREEN:
-          printf("%-3d %d %-3d ", 0, 255, 0);
-          break;
-        case BLUE:
-          printf("%-3d %-3d %d ", 0, 0, 255);
-          break;
-        case WHITE:
-          printf("%d %d %d ", 255, 255, 255);
-          break;
-        case YELLOW:
-          printf("%d %d %-3d ", 255, 255, 0);
-          break;
-        case BLACK:
-          printf("%-3d %-3d %-3d ", 0, 0, 0);
-          break;
-        default:
-          fprintf(stderr, "Invalid: %c\n", c);
-          exit(2);
+      case RED:
+        fprintf(output, "%d %-3d %-3d ", 255, 0, 0);
+        break;
+      case GREEN:
+        fprintf(output, "%-3d %d %-3d ", 0, 255, 0);
+        break;
+      case BLUE:
+        fprintf(output, "%-3d %-3d %d ", 0, 0, 255);
+        break;
+      case WHITE:
+        fprintf(output, "%d %d %d ", 255, 255, 255);
+        break;
+      case YELLOW:
+        fprintf(output, "%d %d %-3d ", 255, 255, 0);
+        break;
+      case BLACK:
+        fprintf(output, "%-3d %-3d %-3d ", 0, 0, 0);
+        break;
+      default:
+        fprintf(stderr, "Invalid: %c\n", c);
+        exit(2);
       }
     }
     printf("\n");
   }
 }
-
-
-
 
 

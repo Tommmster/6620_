@@ -1,4 +1,4 @@
-#include <strings.h>
+#include <string.h>
 #include "builders.h"
 
 #ifdef SANITY_CHECK

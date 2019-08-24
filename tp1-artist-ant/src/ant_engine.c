@@ -52,12 +52,13 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
     rule = next_rotation(current);
     next = next_colour();
 
+    /* Paint */
     grid_handler->set(current_x, current_y, next);
 
-    //Rotate
+    /* Rotate */
     ant->o = new_orientation(current_o, rule);
 
-    //Move forward
+    /* Move forward */
     ant = move_forward(ant, grid_handler->width, grid_handler->height);
   }
 
@@ -67,14 +68,13 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
 
 
 #ifdef USE_TABLES
+
 ant_t*
-move_forward(ant_t *ant, uint32_t width, uint32_t height)
+move_forward(ant_t *ant, const uint32_t width, const uint32_t height)
 {
-
-  static uint32_t relevant_bounds[4] = {height, height, width, width};
+  uint32_t relevant_bounds[4] = {height, height, width, width};
   uint32_t bound = relevant_bounds[ant->o];
-
-  step_fn go_forward = allowed_forward[ant->o]
+  step_fn go_forward = allowed_forward[ant->o];
   go_forward(ant, bound);
 
   return ant;

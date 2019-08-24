@@ -9,6 +9,7 @@ typedef struct {
   uint32_t (*get)(uint32_t x, uint32_t y);
 } grid_handler_t; 
 
+/* Create a grid and return the means to access it, along its properties */
 grid_handler_t*
 make_grid(const uint32_t w,const uint32_t h,const colour_t initial);
 

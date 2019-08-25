@@ -14,9 +14,8 @@
 \usepackage{url}
 \usepackage{amsmath}
 
-
 \author{}
-\title{Trabajo práctico 1: Conjunto de instrucciones MIPS}
+\title{Trabajo práctico 0: Ley de Amdahl}
 
 \begin{document}
 \date{}
@@ -24,159 +23,78 @@
 
 \section{Introducción}
 
-En la clase del jueves 22/8 presentamos las herramientas necesarias para poder compilar y ejecutar
-programas escritos en C dentro de un ambiente MIPS
+En la clase del 22/8 se presentaron las herramientas necesarias para compilar, depurar y ejecutar programas en un 
+ambiente MIPS. Asímismo se describieron los fundamentos de la Ley de Amdahl, y como puede ser usada para estimar
+y medir los alcances de una mejora a un proceso.
 
 \section{Descripción}
-El trabajo práctico consiste en implementar un problema denominado \textbf{"La hormiga artista"}. El mismo plantea un recorrido
-sobre un espacio de dos dimensiones, donde el mismo está definido por reglas predefinidas.
-
-Se dispone de un area bidimensional dividida en celdas cuyo tamaño es configurable, donde cada celda está pintada de un color\footnote{El color inicial de todo el espacio es el primero de la paleta especificada}. En la posición central se encuentra una
-hormiga, orientada hacia el norte\footnote{En el formato de salida, hacia el encabezado del archivo}, que dispone de una paleta de colores. 
-Al encontrarse sobre una celda, la hormiga cambia su orientación rotando hacia la izquierda (\texttt{L}) o derecha (\texttt{R}) según el 
-color sobre el que se encuentre, pinta la celda utilizando el color de la paleta que sigue al último usado\footnote{El primer color a utilizar es el segundo 
-color de la paleta} y se mueve a la celda que tiene delante. Esta secuencia de acciones se repite un número determinado de veces.
-Finalmente se escribe el estado de la grilla por la salida estandar, en formato PPM.
-
-La paleta de colores contiene una combinación de los siguientes colores: 
-Rojo (\texttt{R}), Azul (\texttt{B}), Verde (\texttt{G}), Amarillo (\texttt{Y}), Blanco (\texttt{W}) y Negro (\texttt{N}).
-
+El trabajo práctico consiste en estudiar la performance de una implementación de la Hormiga de Langton que denominaremos
+La hormiga artista.
 \pagebreak
-\section{El programa}
 
-El programa debe tomar las siguientes opciones:
+\section{La hormiga artista}
+
+Como parte de los recursos a utilizar en este trabajo práctico, se provee un número de implementaciones del problema.
+Para todos los casos, se deben especificar los siguientes parámetros
 \begin{itemize}
 \item Las dimensiones de la grilla
-\item La paleta de colores
-\item El conjunto de reglas para realizar las rotaciones
+\item La paleta de colores a utilizar
+\item Un conjunto de reglas para realizar las rotaciones
 \item La cantidad de movimientos a realizar
 \end{itemize}
-\subsection{Implementación}
-Como punto de partida se provee un esqueleto escrito en C en el cual se encuentran resueltos aspectos como la evaluación de parámetros, 
-algunas estructuras y la impresión final en formato PPM (ver Sección \ref{Recursos}).  Sin embargo, el movimiento de la hormiga a través del
-espacio bidimensional debe programarse y tiene la siguiente interfaz:
 
+A su vez, se pueden especificar las siguientes opciones de compilación para generar distintas versiones
+\begin{itemize}
+\item \texttt{USE\_COL\_MAJOR}
+Al momento de imprimir el estado de la grilla, la misma es recorrida 'por columnas'
+\item \texttt{USE\_TABLES}
+Las acciones de rotar y moverse hacia adelante se realizan en funciones independientes
+\item \texttt{SANITY\_CHECK}
+El programa se detiene en caso de que no se cumpla alguna condición
+\end{itemize}
+
+\subsection{Implementación}
+
+Como primer paso, se pueden generar dos versiones distintas del programa, variando la implementación de la siguiente
+función:
 \begin{small}
 \begin{verbatim}
 void*
-paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotation, uint32_t iterations)
+paint(void *artist_ant, void *gridfn, colour_fn next_colour, 
+    rule_fn next_rotation, uint64_t iterations);
 \end{verbatim}
 \end{small}
+
+Se presume que la versión base demora mas tiempo en ejecutar que la alternativa -compilada con la opción 
+\texttt{USE\_TABLES}- puede completar la cantidad especificada de iteraciones en menos tiempo.  Para comprobar si esta 
+afirmación es cierta, utilizaremos la herramienta \texttt{gprof}.
 
 \pagebreak
 \section{Ejemplos}
 
-    \begin{verbatim}
-    ./tp1 --help
-      ./tp1 -g <dimensions> -p <colors> -r <rules> -t <n>
-      -g --grid: wxh
-      -p --palette: Combination of R|G|B|Y|N|W
-      -r --rules: Combination of L|R
-      -n --times: Iterations
-      -h --help: Print this message and exit
-      -v --verbose: Version number
-    \end{verbatim}
+\begin{verbatim}
 
-    \begin{verbatim}
-    $ tp1 --grid 3x3 --palette "R|G|B" --rules "L|R|L" --times 3
-    P3
-    3 3
-    255
-
-    255 0   0   255 0   0   255 0   0
-    0   0   255 0   255 0   255 0   0 
-    255 0   0   255 0   0   255 0   0
-    \end{verbatim}
-La imagen resultante sería:
-\begin{center}
-\begin{tikzpicture}
-\draw[step=1cm,gray,thin] (-1,-1) grid (2,2);
-\fill[red](-1,1) rectangle(0,2);
-\fill[red](0,1) rectangle(1,2);
-\fill[red](1,1) rectangle(2,2);
-\fill[blue](-1,0) rectangle(1,1);
-\fill[green](0,0) rectangle(1,1);
-\fill[red](1,0) rectangle(2,1);
-\fill[red](-1,-1) rectangle(0,0);
-\fill[red](0,-1) rectangle(1,0);
-\fill[red](1,-1) rectangle(2,0);
-\end{tikzpicture}
-\end{center}
-
-    \begin{verbatim}
-    $ tp1 --grid 3x3 --palette Y|N|B --rules L|R|L --times 2
-    P3
-    3 3
-    255
-
-    255 255 0   255 255 0   255 255 0
-    0   0   255 0   0   0   255 255 0
-    255 255 0   255 255 0   255 255 0
-    \end{verbatim}
-La imagen resultante sería:
-\begin{center}
-\begin{tikzpicture}
-\draw[step=1cm,gray,thin] (-1,-1) grid (2,2);
-\fill[yellow](-1,1) rectangle(0,2);
-\fill[yellow](0,1) rectangle(1,2);
-\fill[yellow](1,1) rectangle(2,2);
-\fill[blue](-1,0) rectangle(1,1);
-\fill[black](0,0) rectangle(1,1);
-\fill[yellow](1,0) rectangle(2,1);
-\fill[yellow](-1,-1) rectangle(0,0);
-\fill[yellow](0,-1) rectangle(1,0);
-\fill[yellow](1,-1) rectangle(2,0);
-\end{tikzpicture}
-\end{center}
-
-    \begin{verbatim}
-    $ tp1 --grid 2x2 --palette N|W --rules R|L --times 1
-    P3
-    2 2
-    255
-
-    0   0   0   0   0   0 
-    0   0   0   255 255 255
-    \end{verbatim}
-
-La imagen resultante sería:
-\begin{center}
-\begin{tikzpicture}
-\draw[step=1cm,gray,thin] (-1,-1) grid (1,1);
-\fill[black](-1,0) rectangle(1,1);
-\fill[black](0,0) rectangle(1,1);
-\fill[black](-1,-1) rectangle(0,0);
-\fill[yellow](0,-1) rectangle(1,0);
-\end{tikzpicture}
-\end{center}
-
-\section{Extras}
-\begin{itemize}
-\item Mediciones de tiempo
-\item Impacto sobre el \textit{cache}
-\end{itemize}
-
+\end{verbatim}
 \section{Recursos}\label{Recursos}
 
 \begin{itemize}
-\item Formato PPM: http://netpbm.sourceforge.net/doc/ppm.html
+\item Hormiga de Langton: \url{https://es.wikipedia.org/wiki/Hormiga_de_Langton}
+\item Formato PPM: \url{http://netpbm.sourceforge.net/doc/ppm.html}
+\item Imagemagick \url{https://imagemagick.org/index.php}
+\item GProf guía rápida \url{https://web.eecs.umich.edu/~sugih/pointers/gprof_quick.html}
+\item Manual gprof \url{https://linux.die.net/man/1/gprof}
+
 \end{itemize}
 
 \section{Condiciones de entrega}
 
-Las fechas de entrega para el trabajo práctico son el Jueves 25/4 y el jueves 9/5. La entrega debe incluir un informe
-describiendo la resolución del trabajo práctico, que incluya:
-
 \begin{itemize}
-\item Carátula especificando los datos y contacto de los integrantes del grupo (dirección de correo electrónico, \textit{handle} de slack)
-\item Instrucciones necesarias para compilar y ejecutar el programa
+\item Carátula especificando los datos y contacto de los integrantes del grupo (dirección de correo electrónico, 
+\textit{handle} de slack, ubicación del repositorio de código)
 \item Decisiones relevantes sobre la implementación y resolución
 \item Conclusiones con \underline{fundamentos reales}
-\item Diagramas ilustrando la estructura del \textit{stack} de cada función relevante
 \item Casos de prueba documentados
 \item Código fuente
 \item Este enunciado
 \end{itemize}
-
-
 \end{document}

@@ -1,6 +1,6 @@
 
 tp0_if: square_grid.c builders.c palette.c rules.c square_grid.c ant_engine.c artist_ant.c 
-	gcc -no-pie -pg -g $^ -o $@
+	gcc -g $^ -o $@
 
 tp0_if_col_major: square_grid.c builders.c palette.c rules.c square_grid.c ant_engine.c artist_ant.c 
 	gcc -no-pie -pg -g $^ -DUSE_COL_MAJOR -o $@

@@ -16,7 +16,7 @@
 
 static ant_t ant;
 
-static FILE * output;
+static FILE *outfile; 
 
 static void
 show_warn(char *p)
@@ -31,6 +31,7 @@ show_help(char *msg) {
     fprintf(stderr, "  -p --palette: Combination of R|G|B|Y|N|W\n");
     fprintf(stderr, "  -r --rules: Combination of L|R\n");
     fprintf(stderr, "  -t --times: Iterations. If negative, it's complement will be used.\n");
+    fprintf(stderr, "  -o --outfile: output file. Defaults to stdout.\n");
     fprintf(stderr, "  -h --help: Print this message and exit\n");
     fprintf(stderr, "  -v --verbose: Version number\n");
 
@@ -72,7 +73,7 @@ main(int argc, char **argv)
     {"palette", 1, 0, 'p'},
     {"rules",  1, 0, 'r'},
     {"times",  1, 0, 't'},
-    {"output", 1, 0, 'o'},
+    {"outfile", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
     {"version", 0, 0, 'v'},
     {0, 0, 0, 0}
@@ -98,22 +99,22 @@ main(int argc, char **argv)
   colour_fn next_colour_fn;
   rule_fn rules;
 
+  outfile = stdout;
   /* Parse arguments */
   while ((opt = getopt_long(argc, argv, "g:p:r:t:o:hv", long_options, &long_index)) != -1) {
 
     switch(opt) {
-      case 'o': /* output */
+      case 'o': /* outfile */
         if (strcmp(optarg, "-") != 0) {
-          output = fopen(optarg,"w");
+          errno = 0;
+          outfile = fopen(optarg, "w");
 
-          if (!output) {
-            fprintf(stderr, "Unable to open output file. errno %d", errno);
+          if (!outfile) {
+            fprintf(stderr, "Unable to open outfile %s: errno %d\n", optarg, errno);
             exit(2);
           }
-
-          break;
         }
-     
+        break;
       case 'g': /* grid */
         dim_separator = strchr(optarg, 'x');
         assert(dim_separator != NULL);
@@ -214,9 +215,9 @@ static void grid_out(grid_handler_t* grid)
   unsigned int grid_width = grid -> width;
   unsigned int grid_height = grid -> height;
 
-  fprintf(output, "P3\n");
-  fprintf(output, "%d %d\n", grid_width, grid_height);
-  fprintf(output, "255\n");
+  fprintf(outfile, "P3\n");
+  fprintf(outfile, "%d %d\n", grid_width, grid_height);
+  fprintf(outfile, "255\n");
 
 #ifdef USE_COL_MAJOR
   for (unsigned int j = 0;  j < grid_height; j++) {
@@ -229,29 +230,29 @@ static void grid_out(grid_handler_t* grid)
 
       switch(c) {
       case RED:
-        fprintf(output, "%d %-3d %-3d ", 255, 0, 0);
+        fprintf(outfile, "%d %-3d %-3d ", 255, 0, 0);
         break;
       case GREEN:
-        fprintf(output, "%-3d %d %-3d ", 0, 255, 0);
+        fprintf(outfile, "%-3d %d %-3d ", 0, 255, 0);
         break;
       case BLUE:
-        fprintf(output, "%-3d %-3d %d ", 0, 0, 255);
+        fprintf(outfile, "%-3d %-3d %d ", 0, 0, 255);
         break;
       case WHITE:
-        fprintf(output, "%d %d %d ", 255, 255, 255);
+        fprintf(outfile, "%d %d %d ", 255, 255, 255);
         break;
       case YELLOW:
-        fprintf(output, "%d %d %-3d ", 255, 255, 0);
+        fprintf(outfile, "%d %d %-3d ", 255, 255, 0);
         break;
       case BLACK:
-        fprintf(output, "%-3d %-3d %-3d ", 0, 0, 0);
+        fprintf(outfile, "%-3d %-3d %-3d ", 0, 0, 0);
         break;
       default:
         fprintf(stderr, "Invalid: %c\n", c);
         exit(2);
       }
     }
-    printf("\n");
+    fprintf(outfile, "\n");
   }
 }
 

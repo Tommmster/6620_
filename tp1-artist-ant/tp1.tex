@@ -27,9 +27,9 @@ En la clase del 22/8 se presentaron las herramientas necesarias para compilar, d
 ambiente MIPS. Asímismo se describieron los fundamentos de la Ley de Amdahl, y como puede ser usada para estimar
 y medir los alcances de una mejora a un proceso.
 
-\section{Descripción}
 El trabajo práctico consiste en estudiar la performance de una implementación de la Hormiga de Langton que denominaremos
 La hormiga artista.
+
 \pagebreak
 
 \section{La hormiga artista}
@@ -67,10 +67,10 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour,
 
 Se presume que la versión base demora mas tiempo en ejecutar que la alternativa -compilada con la opción 
 \texttt{USE\_TABLES}- puede completar la cantidad especificada de iteraciones en menos tiempo.  Para comprobar si esta 
-afirmación es cierta, utilizaremos la herramienta \texttt{gprof}.
+afirmación es cierta, utilizaremos las herramientas \texttt{time} y \texttt{gprof}.
 
 \pagebreak
-\section{Ejemplos}
+\subsection{Ejemplos}
 
 Listamos las opciones utilizando el comando \texttt{--help}
 \begin{verbatim}
@@ -88,6 +88,67 @@ Compile with -DSANITY_CHECK to enable runtime checks
 Compile with -DUSE_TABLES to execute ant operations in separate functions
 Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order
 \end{verbatim}
+
+Medimos el tiempo en ejecutar diez mil operaciones en la menor grilla posible, y repetimos escalando la cantidad
+de operaciones
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t ((10 * 1000))  > /dev/null
+real 0.10
+user 0.06
+sys 0.02
+\end{verbatim}
+
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t $((100 * 1000))  > /dev/null
+real 0.18
+user 0.15
+sys 0.02
+\end{verbatim}
+
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t $((1000 * 1000))  > /dev/null
+real 1.41
+user 1.20
+sys 0.01
+\end{verbatim}
+
+Repetimos, con una grilla significativamente mas grande
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((10 * 1000))  > /dev/null
+
+real	0m3.611s
+user	0m3.072s
+sys	0m0.032s
+\end{verbatim}
+
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((100 * 1000))  > /dev/null
+
+real	0m3.178s
+user	0m2.784s
+sys	0m0.012s
+\end{verbatim}
+
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((1000 * 1000))  > /dev/null
+
+real	0m3.414s
+user	0m2.976s
+sys	0m0.028s
+\end{verbatim}
+
+\section{Objetivos}
+Tal como se menciona arriba, se disponen de dos implementaciones de la versión \texttt{paint}. 
+El objetivo del trabajo práctico estudiar cuál es el máximo Speed Up posible al optimizar dicha función, para después  
+luego contrastar esta hipótesis con las mediciones realizadas sobre la nueva implementación.
+
+El informe debe contaner
+\begin{itemize}
+\item Análisis realizado con \texttt{gprof}
+\item Comparaciones del tiempo de ejecución con distintos parámetros
+\item Cálculo del Speedup global y local
+\end{itemize}
+
 \section{Recursos}\label{Recursos}
 
 \begin{itemize}
@@ -107,7 +168,7 @@ Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order
 \item Decisiones relevantes sobre la implementación y resolución
 \item Conclusiones con \underline{fundamentos reales}
 \item Casos de prueba documentados
-\item Código fuente
+\item Código fuente, si aplica
 \item Este enunciado
 \end{itemize}
 \end{document}

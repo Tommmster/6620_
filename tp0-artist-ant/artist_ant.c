@@ -20,24 +20,32 @@ static FILE *outfile;
 static void
 show_warn(char *p)
 {
-     fprintf(stderr, " %s\n", p);
+  fprintf(stderr, " %s\n", p);
 }
 
 static void
+show_example(char *p)
+{
+  fprintf(stderr, "Example: \n");  
+  fprintf(stderr,"\t%s -g 2x2 -p RGB -r LLL -t 5\n", p);
+}
+static void
 show_help(char *msg) {
-    fprintf(stderr, "  %s -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>\n", msg);
-    fprintf(stderr, "  -g --grid: wxh\n");
-    fprintf(stderr, "  -p --palette: Combination of R|G|B|Y|N|W\n");
-    fprintf(stderr, "  -r --rules: Combination of L|R\n");
-    fprintf(stderr, "  -t --times: Iterations. If negative, it's complement will be used.\n");
-    fprintf(stderr, "  -o --outfile: output file. Defaults to stdout.\n");
-    fprintf(stderr, "  -h --help: Print this message and exit\n");
-    fprintf(stderr, "  -v --verbose: Version number\n");
+  fprintf(stderr, "  %s -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>\n", msg);
+  fprintf(stderr, "  -g --grid: wxh\n");
+  fprintf(stderr, "  -p --palette: Combination of RGBYNW characters\n");
+  fprintf(stderr, "  -r --rules: Combination of LR characters\n");
+  fprintf(stderr, "  -t --times: Iterations. If negative, it's complement will be used.\n");
+  fprintf(stderr, "  -o --outfile: output file. Defaults to stdout.\n");
+  fprintf(stderr, "  -h --help: Print this message and exit\n");
+  fprintf(stderr, "  -v --verbose: Version number\n");
+  
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Compile with -DSANITY_CHECK to enable runtime checks\n");
+  fprintf(stderr, "Compile with -DUSE_TABLES to execute ant operations in separate functions\n");
+  fprintf(stderr, "Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order\n");
+  show_example(msg);
 
-    fprintf(stderr, "\n");
-    fprintf(stderr, "Compile with -DSANITY_CHECK to enable runtime checks\n");
-    fprintf(stderr, "Compile with -DUSE_TABLES to execute ant operations in separate functions\n");
-    fprintf(stderr, "Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order\n");
 }
 
 static void
@@ -128,22 +136,15 @@ main(int argc, char **argv)
         break;
       case 'p': /* palette */
         initial = get_colour(optarg[0]);
-        #ifdef USE_DIFF_PALETTE
-        colour_spec_len = strlen(optarg) - 1;
-        colour_spec = (char *) xmalloc(colour_spec_len);
-        memcpy(colour_spec, optarg + 1, colour_spec_len);
-        #else
         colour_spec_len = strlen(optarg);
-        colour_spec = (char *) xmalloc(colour_spec_len);
+        colour_spec = xalloc(1, colour_spec_len);
         memcpy(colour_spec, optarg, colour_spec_len);
-        #endif /* USE_DIFF_PALETTE */
-        
-        
+
         break;
 
       case 'r': /* rules */
        rule_spec_len = strlen(optarg);
-       rule_spec = (char *) xmalloc(rule_spec_len);
+       rule_spec = xalloc(1, rule_spec_len);
        memcpy(rule_spec, optarg, rule_spec_len);
 
        break;
@@ -179,17 +180,11 @@ main(int argc, char **argv)
         exit(1);
     }
   }
-
-  printf("check");
   /* Check arguments */
   check_required("Grid spec (h) is required", grid_height > 0);
   check_required("Grid spec (w) is required", grid_width > 0);
   check_required("Iterations is required", iterations > 0);
 
-  #ifdef USE_DIFF_PALETTE
-  initial_colour_spec = COLOUR(initial);
-  check_required("Initial colour can't be used in the palette", !strchr(colour_spec, initial_colour_spec));
-  #endif
   check_required("Rule spec is required", rule_spec);
   check_required("Colour spec is required", colour_spec);
   check_required("Rule and colour length should match", rule_spec_len == colour_spec_len );
@@ -204,20 +199,23 @@ main(int argc, char **argv)
   artist_ant = make_ant(grid_width >> 1, grid_height >> 1);
   
   /* Start the show */
-  printf("do paint\n");
   paint(artist_ant, grid, next_colour_fn, rules, iterations);
 
-  printf("do out\n");
   grid_out(grid);
 
   free(artist_ant);
+  artist_ant = NULL;
+  
+  destroy_palette();
+  destroy_grid();
+  
   return 0;
 }
 
 void*
 make_ant(uint32_t xini, uint32_t yini)
 {
-  ant_t *ant = xmalloc(sizeof(ant_t));
+  ant_t *ant = xalloc(1, sizeof(ant_t));
   ant->x = xini;
   ant->y = yini;
   ant->o = NORTH;
@@ -229,8 +227,8 @@ static void
 grid_out(grid_handler_t* grid)
 {
   colour_t c;
-  unsigned int grid_width = grid -> width;
-  unsigned int grid_height = grid -> height;
+  unsigned int grid_width = grid ->rows; 
+  unsigned int grid_height = grid -> cols;
 
   fprintf(outfile, "P3\n");
   fprintf(outfile, "%d %d\n", grid_width, grid_height);

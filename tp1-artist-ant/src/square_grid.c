@@ -24,19 +24,19 @@ colour_at(uint32_t x, uint32_t y)
 }
 
 grid_handler_t*
-make_grid(const uint32_t w,const uint32_t h,const colour_t initial)
+make_grid(const uint32_t width,const uint32_t height,const colour_t initial)
 {
 	unsigned int i, j;
-  sq_grid.grid = (uint32_t **) xmalloc (w * sizeof(uint32_t*));
+  sq_grid.grid = (colour_t **) xmalloc (width * sizeof(colour_t*));
 
-  for (i = 0; i < w; i++) {
-    sq_grid.grid[i] = (uint32_t *) xmalloc (h * sizeof(colour_t));
-    for (j = 0; j < h; j++) {
+  for (i = 0; i < width; i++) {
+    sq_grid.grid[i] = (colour_t *) xmalloc (height * sizeof(colour_t));
+    for (j = 0; j < height; j++) {
       sq_grid.grid[i][j] =  initial;
     }
   }
 
-  return make_grid_handler(w, h);
+  return make_grid_handler(width, height);
 }
 
 static grid_handler_t*
@@ -47,6 +47,7 @@ make_grid_handler(const uint32_t width, const uint32_t height)
 
 	handler.set = paint_at;
 	handler.get = colour_at;
+  
 
 	return &handler;
 }

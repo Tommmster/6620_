@@ -5,26 +5,23 @@ static rotation_t mappings[COLOURS_LEN];
 
 rule_fn 
 make_rules(char *rule_spec, const size_t rule_spec_len,
-					 char *palette_spec, const size_t palette_spec_len)
+	 char *palette_spec, const size_t palette_spec_len)
 {
   rotation_t each_rotation;
-	colour_t each_colour;
-	unsigned int i;
+  colour_t each_colour;
+  unsigned int i;
 
 #ifdef SANITY_CHECK
-	if (rule_spec_len != palette_spec_len) {
+  if (rule_spec_len != palette_spec_len) {
     panic("rule and palette length mismatch");
-	}
+  }
 #endif
-
-	const size_t raw_len = rule_spec_len;
 
   for (i = 0; i < COLOURS_LEN; i++) {
     mappings[i] = INVALID_ROTATION;
   }
 
-  printf("rules: %s, %zu, %s, %zu\n", rule_spec, rule_spec_len, palette_spec, palette_spec_len);
-  for (i = 0; i < raw_len; i++) {
+  for (i = 0; i < rule_spec_len; i++) {
 
     if (rule_spec[i] == 'L') {
       each_rotation = LEFT;
@@ -35,23 +32,22 @@ make_rules(char *rule_spec, const size_t rule_spec_len,
     }
     each_colour = get_colour(palette_spec[i]);
 		
-		//Sanity check
-	  if (each_rotation != LEFT && each_rotation != RIGHT) {
+    /* Sanity check */
+    if (each_rotation != LEFT && each_rotation != RIGHT) {
       panicd("Faulting rotation %d", each_rotation);
-	  }
+    }
 
     if (COLOUR_NOT_FOUND == each_colour) {
       panicd("Faulting colour spec %c", palette_spec[i]);
     }
 
-		/*
+    /*
      * Shamelessly taking advantage of the fact that C enums
-		 * are integer types 
+     * are integer types 
      */
-		mappings[each_colour] = each_rotation;
+     mappings[each_colour] = each_rotation;
   }
 
-  printf("done rules\n");
   return rule_for_colour;
 }
 
@@ -65,11 +61,9 @@ rule_for_colour(colour_t colour)
 {
 
 #ifdef SANITY_CHECK
-	if (INVALID_ROTATION == mappings[colour]){
+  if (INVALID_ROTATION == mappings[colour]){
     panicd("Invalid rule for colour %c", COLOUR(colour));
-	}
+   }
 #endif
-  rotation_t r = mappings[colour];
-  printf("rule_for(%c): %d\n", COLOUR(colour), r);
-  return r;
+  return mappings[colour];
 }

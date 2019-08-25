@@ -8,12 +8,20 @@ static size_t palette_len;
 
 static colour_t present[COLOURS_LEN];
 static const unsigned int sentinel = COLOURS_LEN + 1;
+
+void 
+destroy_palette(void)
+{
+  free(palette);
+  palette = NULL;
+}
+
 colour_fn
 make_palette(const char *colour_spec, size_t palette_spec_len) 
 {
   unsigned int i = 0;
 
-  palette = (colour_t *) xmalloc(palette_spec_len * sizeof(colour_t));
+  palette = xalloc(palette_spec_len , sizeof(colour_t));
   palette_len = palette_spec_len;
 
   colour_t each;
@@ -22,7 +30,6 @@ make_palette(const char *colour_spec, size_t palette_spec_len)
     present[i] = sentinel;
   }
 
-  printf("palette %s %zu\n", colour_spec, palette_spec_len);
   for(i = 0; i < palette_spec_len ; i++) {
     each = get_colour(colour_spec[i]);
 
@@ -38,7 +45,6 @@ make_palette(const char *colour_spec, size_t palette_spec_len)
     palette[i >> 1] = each;
   }
  
-  printf("done palette\n");
   return next_colour;
 }
 

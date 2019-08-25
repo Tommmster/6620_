@@ -44,12 +44,10 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
 
   for (i = 0; i < iterations ; i++) {
     /* Ant state */
-    printf("%llu...\n", i);
     current_x = ant->x;
     current_y = ant->y;
     current_o = ant->o;
 
-    printf("..at %d %d %d..", current_x, current_y, current_o);
     current = grid_handler->get(current_x, current_y);
 
     rule = next_rotation(current);
@@ -62,8 +60,7 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
     ant->o = new_orientation(current_o, rule);
 
     /* Move forward */
-    ant = move_forward(ant, grid_handler->width, grid_handler->height);
-    printf("next from %d %d %d\n", ant->x, ant->y, ant->o);
+    ant = move_forward(ant, grid_handler->cols, grid_handler->rows);
   }
 
   return ant;

@@ -25,7 +25,7 @@
 
 colour_t get_colour(char c);
 
-void * xmalloc(size_t len);
+void * xalloc(size_t n, size_t siz);
 
 uint32_t atoui32(void *arg, uint32_t from, uint32_t to);
 #endif /* __BUILDERS_H__ */

@@ -209,7 +209,8 @@ make_ant(uint32_t xini, uint32_t yini)
   return &ant;
 }
 
-static void grid_out(grid_handler_t* grid)
+static void 
+grid_out(grid_handler_t* grid)
 {
   colour_t c;
   unsigned int grid_width = grid -> width;

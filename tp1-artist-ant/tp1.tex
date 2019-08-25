@@ -72,8 +72,21 @@ afirmación es cierta, utilizaremos la herramienta \texttt{gprof}.
 \pagebreak
 \section{Ejemplos}
 
+Listamos las opciones utilizando el comando \texttt{--help}
 \begin{verbatim}
+./tp0_if --help
+  ./tp0_if -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>
+  -g --grid: wxh
+  -p --palette: Combination of R|G|B|Y|N|W
+  -r --rules: Combination of L|R
+  -t --times: Iterations. If negative, it's complement will be used.
+  -o --outfile: output file. Defaults to stdout.
+  -h --help: Print this message and exit
+  -v --verbose: Version number
 
+Compile with -DSANITY_CHECK to enable runtime checks
+Compile with -DUSE_TABLES to execute ant operations in separate functions
+Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order
 \end{verbatim}
 \section{Recursos}\label{Recursos}
 

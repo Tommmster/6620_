@@ -6,6 +6,8 @@
 static colour_t *palette;
 static size_t palette_len;
 
+static colour_t present[COLOURS_LEN];
+static const unsigned int sentinel = COLOURS_LEN + 1;
 colour_fn
 make_palette(const char *colour_spec, size_t palette_spec_len) 
 {
@@ -17,13 +19,22 @@ make_palette(const char *colour_spec, size_t palette_spec_len)
 
   colour_t each;
 
-  for(; i < palette_spec_len ; i+=2) {
+  for (i = 0; i < COLOURS_LEN; i++) {
+    present[i] = sentinel;
+  }
+
+  for(i = 0; i < palette_spec_len ; i+=2) {
     each = get_colour(colour_spec[i]);
 
     if (COLOUR_NOT_FOUND == each) {
       panicd("Faulting colour spec %c", colour_spec[i]);
     }
 
+    if (present[each] != sentinel) {
+      panicd("Faulting colour spec, don't repeat values: %c", COLOUR(each));
+    }
+
+    present[each] = each;
     palette[i >> 1] = each;
   }
  
@@ -34,8 +45,8 @@ static colour_t
 next_colour(void)
 {
   static unsigned int current_index = 0;
-	const unsigned int at = current_index++ % palette_len;
+  const unsigned int at = current_index++ % palette_len;
 
-	return palette[at];
+  return palette[at];
 }
 

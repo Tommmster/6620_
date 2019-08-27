@@ -3,8 +3,10 @@
 
 #include "artist_ant.h"
 
+#define OFFSET_AT(x,y,r,c) ((x) * (c) + (y))
+
 typedef struct {
-    colour_t **grid;
+  colour_t *grid;
 } square_grid_t;
 
 #endif /* __SQUARE_GRID_H__ */

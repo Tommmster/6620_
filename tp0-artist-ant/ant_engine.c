@@ -51,16 +51,16 @@ paint(void *artist_ant, void *gridfn, colour_fn next_colour, rule_fn next_rotati
     current = grid_handler->get(current_x, current_y);
 
     rule = next_rotation(current);
-    next = next_colour();
 
     /* Paint */
+    next = next_colour();
     grid_handler->set(current_x, current_y, next);
 
     /* Rotate */
     ant->o = new_orientation(current_o, rule);
 
     /* Move forward */
-    ant = move_forward(ant, grid_handler->width, grid_handler->height);
+    ant = move_forward(ant, grid_handler->rows, grid_handler->cols);
   }
 
   return ant;
@@ -84,7 +84,7 @@ move_forward(ant_t *ant, const uint32_t width, const uint32_t height)
 orientation_t 
 new_orientation(orientation_t orientation, rotation_t rule)
 {
-  orientation_t rotation_rules[4][2] = {
+  static orientation_t rotation_rules[4][2] = {
     {WEST,EAST},    /* north */
     {EAST,WEST},    /* south */
     {NORTH, SOUTH}, /* east */
@@ -99,26 +99,27 @@ new_orientation(orientation_t orientation, rotation_t rule)
 static orientation_t
 decide(rotation_t d, orientation_t go_left, orientation_t go_right)
 {
-  return d ? go_right : go_left;
+  return d == RIGHT ? go_right : go_left;
 }
 
 orientation_t 
 new_orientation(orientation_t orientation, rotation_t rule)
 {
   orientation_t updated_orientation;
+
   switch(orientation) {
   case NORTH:
-	  updated_orientation = decide(rule, WEST, EAST);
-		break;
+    updated_orientation = decide(rule, WEST, EAST);
+    break;
   case SOUTH:
-	  updated_orientation = decide(rule, EAST, WEST);
-		break;
+    updated_orientation = decide(rule, EAST, WEST);
+    break;
   case EAST:
-	  updated_orientation = decide(rule, NORTH, SOUTH);
-		break;
+    updated_orientation = decide(rule, NORTH, SOUTH);
+    break;
   case WEST:
-	  updated_orientation = decide(rule, SOUTH, NORTH);
-		break;
+    updated_orientation = decide(rule, SOUTH, NORTH);
+    break;
   default:
     panicd("Unknown orientation %d", orientation);
   }

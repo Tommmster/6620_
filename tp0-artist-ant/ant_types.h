@@ -8,6 +8,8 @@
 #define COLOURS "RGBYNW"
 #define COLOURS_LEN 6
 
+#define COLOUR(d) COLOURS[(d)]
+
 typedef enum colour {RED = CR, GREEN = CG, BLUE = CB, YELLOW = CY, BLACK = CN, WHITE = CW} colour_t;
 
 typedef enum orientation {NORTH = ON, SOUTH = OS, EAST = OE, WEST = OW} orientation_t;

@@ -20,15 +20,15 @@ get_colour(char c)
 }
 
 void*
-xmalloc(size_t len)
+xalloc(size_t n, size_t size)
 {
-  void *p = malloc(len);
+  void *p = calloc(n, size);
 
-	if (!p) {
-	  panic ("failed");
-	}
+  if (!p) {
+    panicd("alloc failed for %zu elements * bytes", n * size);
+  }
 
-	return p;
+  return p;
 }
 
 uint32_t

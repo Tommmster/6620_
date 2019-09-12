@@ -33,10 +33,15 @@ destroy_grid(void)
 grid_handler_t*
 make_grid(const uint32_t rows, const uint32_t cols, const colour_t initial)
 {
+  uint32_t i;
   grid_rows = rows;
   grid_cols = cols;
 
   sq_grid.grid =  (colour_t *) xalloc (rows * cols, sizeof(colour_t));
+
+  for (i = 0; i < rows * cols; i++) {
+    sq_grid.grid[i] = initial;
+  }
 
   return make_grid_handler(rows, cols);
 }

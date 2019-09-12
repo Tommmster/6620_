@@ -263,7 +263,7 @@ grid_out(grid_handler_t* grid)
         fprintf(outfile, "%-3d %-3d %-3d ", 0, 0, 0);
         break;
       default:
-        fprintf(stderr, "Invalid: %c\n", c);
+        fprintf(stderr, "Invalid grid colour: %c\n", c);
         exit(2);
       }
     }

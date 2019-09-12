@@ -14,6 +14,7 @@
 \usepackage{url}
 \usepackage{amsmath}
 
+\newcommand {\SU}{\textit{Speed Up} }
 \author{}
 \title{Trabajo práctico 0: Ley de Amdahl}
 
@@ -24,13 +25,11 @@
 \section{Introducción}
 
 En la clase del 22/8 se presentaron las herramientas necesarias para compilar, depurar y ejecutar programas en un 
-ambiente MIPS. Asímismo se describieron los fundamentos de la Ley de Amdahl, y como puede ser usada para estimar
-y medir los alcances de una mejora a un proceso.
+ambiente MIPS. Asímismo se describieron los fundamentos de la Ley de Amdahl\footnote{También expuesta en la clase
+teórica del lunes 26/8}, y como puede ser usada para estimar y medir los alcances de una mejora a un proceso.
 
-El trabajo práctico consiste en estudiar la performance de una implementación de la Hormiga de Langton que denominaremos
-La hormiga artista.
-
-\pagebreak
+Este trabajo práctico consiste en estudiar la performance de una implementación de la Hormiga de Langton que 
+denominaremos 'La hormiga artista'. 
 
 \section{La hormiga artista}
 
@@ -53,7 +52,10 @@ Las acciones de rotar y moverse hacia adelante se realizan en funciones independ
 El programa se detiene en caso de que no se cumpla alguna condición
 \end{itemize}
 
+En particular, consideramos relevante las versiones expuestas en \ref{secc:impl}.
+
 \subsection{Implementación}
+\label{secc:impl}
 
 Como primer paso, se pueden generar dos versiones distintas del programa, variando la implementación de la siguiente
 función:
@@ -69,7 +71,6 @@ Se presume que la versión base demora mas tiempo en ejecutar que la alternativa
 \texttt{USE\_TABLES}- puede completar la cantidad especificada de iteraciones en menos tiempo.  Para comprobar si esta 
 afirmación es cierta, utilizaremos las herramientas \texttt{time} y \texttt{gprof}.
 
-\pagebreak
 \subsection{Ejemplos}
 
 Listamos las opciones utilizando el comando \texttt{--help}
@@ -77,8 +78,8 @@ Listamos las opciones utilizando el comando \texttt{--help}
 ./tp0_if --help
   ./tp0_if -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>
   -g --grid: wxh
-  -p --palette: Combination of R|G|B|Y|N|W
-  -r --rules: Combination of L|R
+  -p --palette: Combination of RGBYNW
+  -r --rules: Combination of LR
   -t --times: Iterations. If negative, it's complement will be used.
   -o --outfile: output file. Defaults to stdout.
   -h --help: Print this message and exit
@@ -139,16 +140,21 @@ sys	0m0.028s
 
 \section{Objetivos}
 Tal como se menciona arriba, se disponen de dos implementaciones de la versión \texttt{paint}. 
-El objetivo del trabajo práctico estudiar cuál es el máximo Speed Up posible al optimizar dicha función, para después  
+El objetivo del trabajo práctico estudiar cuál es el máximo \SU posible al optimizar dicha función, para después  
 luego contrastar esta hipótesis con las mediciones realizadas sobre la nueva implementación.
 
-El informe debe contaner
+Se espera que los siguientes puntos estén incluidos en el análisis del problema
 \begin{itemize}
+\item ¿Cómo varía el tiempo de ejecución a medida que se cambian los parámetros del programa?
+\item ¿Durante qué proporción de tiempo se puede aplicar la mejora?
+\item ¿Cuál es el máximo \SU posible?
 \item Análisis realizado con \texttt{gprof}
+\item Mediciones relevantes realizadas con \texttt{time}
 \item Comparaciones del tiempo de ejecución con distintos parámetros
-\item Cálculo del Speedup global y local
+\item Cálculo del \SU global y local
 \end{itemize}
 
+\pagebreak
 \section{Recursos}\label{Recursos}
 
 \begin{itemize}
@@ -157,10 +163,15 @@ El informe debe contaner
 \item Imagemagick \url{https://imagemagick.org/index.php}
 \item GProf guía rápida \url{https://web.eecs.umich.edu/~sugih/pointers/gprof_quick.html}
 \item Manual gprof \url{https://linux.die.net/man/1/gprof}
-
 \end{itemize}
 
 \section{Condiciones de entrega}
+
+\subsection{Fechas de entrega}
+\begin{itemize}
+\item 5/9/2019
+\item 19/9/2019
+\end{itemize}
 
 \begin{itemize}
 \item Carátula especificando los datos y contacto de los integrantes del grupo (dirección de correo electrónico, 

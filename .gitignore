@@ -3,6 +3,7 @@
 *.aux
 *.pdf
 *.swp
+*.tar.gz
 cod/
 tmp/
 pdfs/

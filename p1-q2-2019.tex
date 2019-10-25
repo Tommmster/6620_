@@ -1,0 +1,96 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{siunitx}
+
+\addtolength{\hoffset}{-2.0cm}
+\addtolength{\voffset}{-1.5cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23.5cm}
+
+\begin{document}
+\pagestyle{fancyplain}
+
+\lhead{Organización de Computadoras - 66:20\\
+Parcial 24/10, $2^{do}$ cuatrimestre de 2019}
+\rhead{página \thepage/\pageref{LastPage}}
+\lfoot{{\footnotesize 2019/10/24}}
+\cfoot{}
+\rfoot{}
+
+\begin{enumerate}
+\item	Se tiene una computadora MIPS32 con un reloj de 1.5 GHz, una latencia de memoria de 80 ns y un ancho de banda de 400MHz. El CPI de ejecución de esta CPU es de 1. En esta computadora se ejecuta la función \texttt{memcpy (void *dst, void *src, size\_t size)} con los argumentos \texttt{0xbebacafe}, \texttt{0xbebac0c0}, y \texttt{32}. La función se encuentra en la dirección \texttt{0xcafe0000}
+
+\begin{verbatim}
+        .globl  memcpy
+        .ent    memcpy
+memcpy:
+        addu    $a2,$a2,-1
+        li      $v0,-1                  # 0xffffffffffffffff
+        beq     $a2,$v0,$L7
+        move    $v1,$a0
+        li      $a3,-1                  # 0xffffffffffffffff
+$L5:
+        lbu     $v0,0($a1)
+        sb      $v0,0($v1)
+        addu    $a1,$a1,1
+        addu    $a2,$a2,-1
+        addu    $v1,$v1,1
+        bne     $a2,$a3,$L5
+
+$L7:
+        move    $v0,$a0
+        j       $ra                     # return
+\end{verbatim}
+\begin{enumerate}
+\item ¿Respeta este programa la ABI dada en clase? ¿Por qué?
+\item ¿Es compatible este programa con código que esté compilado respetando la ABI dada en clase? ¿Por qué?
+\item ¿Cuál es el CPI efectivo de esta ejecución de la función? ¿Cuánto dura la ejecución?
+\item ¿Qué proporción de ese CPI representan los ciclos de stall?
+\end{enumerate}
+\item En la computadora anterior se agrega una memoria caché split de mapeo directo de 128 KB en total, WB/WA, con bloques de 8 bytes. La caché de instrucciones y la de datos tienen el mismo tamaño. 
+\begin{enumerate}
+\item ¿A qué conjuntos mapean los vectores y la función?
+\item ¿Cuál es el CPI efectivo de esta ejecución de la función? ¿Cuánto tarda?
+\item ¿Cuál es el speedup para el tiempo promedio de acceso a memoria contra no usar caché?
+\item ¿Se verifica la Ley de Amdahl?
+\end{enumerate}
+
+
+\item Se dispone de una computadora con 16MiB de memoria. El soporte para memoria virtual se implementa mediante una Tabla de páginas invertida, asistida por una \texttt{HAT} y tamaño de página de  4MiB. El proceso de traducción de memoria solo considera los 24 bits menos significativos de la dirección.
+
+\begin{enumerate}
+    \item Indique cómo se utiliza la ubicación virtual para obtener la dirección física.
+    \item ¿Cuántas entradas tiene la Tabla de páginas? Describa el contenido de una entrada.
+    \item Si se dispone de la siguiente función de hash \texttt{h = (va $>>$ OFFSET\_BITS) \& 0x3}. ¿Cuál es la \underline{máxima} cantidad de accesos posibles para traducir una dirección? Describa como se puede producir un fallo de página en este modelo.
+    \item Se dispone de un TLB asociativo de 4 entradas. Traduzca las siguientes direcciones virtuales.
+    
+    \begin{itemize}
+        \item \texttt{0x00078A}
+        \item \texttt{0x0501AB}
+        \item \texttt{0x0FF001}
+    \end{itemize}
+    
+    Contenido del TLB:
+    \begin{center}
+    \begin{tabular}{|c|c|}
+    \hline
+        VPN & PPN   \\
+        \hline
+        0x0CA & 0x00E \\
+        0x000 & 0x0A0 \\
+        0x0FF & 0x055 \\
+        0x0DE & 0x042 \\
+        \hline
+    \end{tabular}
+    \end{center}
+\end{enumerate}\end{enumerate}
+
+
+\end{document}

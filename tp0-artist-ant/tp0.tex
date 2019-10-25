@@ -1,0 +1,185 @@
+\documentclass{article}
+
+%\usepackage[spanish]{babel}
+%\usepackage[ansinew]{inputenc}
+%% graficos
+%\usepackage[pdftex]{graphicx}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{amsmath}
+
+\newcommand {\SU}{\textit{Speed Up} }
+\author{}
+\title{Trabajo práctico 0: Ley de Amdahl}
+
+\begin{document}
+\date{}
+\maketitle
+
+\section{Introducción}
+
+En la clase del 22/8 se presentaron las herramientas necesarias para compilar, depurar y ejecutar programas en un 
+ambiente MIPS. Asímismo se describieron los fundamentos de la Ley de Amdahl\footnote{También expuesta en la clase
+teórica del lunes 26/8}, y como puede ser usada para estimar y medir los alcances de una mejora a un proceso.
+
+Este trabajo práctico consiste en estudiar la performance de una implementación de la Hormiga de Langton que 
+denominaremos 'La hormiga artista'. 
+
+\section{La hormiga artista}
+
+Como parte de los recursos a utilizar en este trabajo práctico, se provee un número de implementaciones del problema.
+Para todos los casos, se deben especificar los siguientes parámetros
+\begin{itemize}
+\item Las dimensiones de la grilla
+\item La paleta de colores a utilizar
+\item Un conjunto de reglas para realizar las rotaciones
+\item La cantidad de movimientos a realizar
+\end{itemize}
+
+A su vez, se pueden especificar las siguientes opciones de compilación para generar distintas versiones
+\begin{itemize}
+\item \texttt{USE\_COL\_MAJOR}
+Al momento de imprimir el estado de la grilla, la misma es recorrida 'por columnas'
+\item \texttt{USE\_TABLES}
+Las acciones de rotar y moverse hacia adelante se realizan en funciones independientes
+\item \texttt{SANITY\_CHECK}
+El programa se detiene en caso de que no se cumpla alguna condición
+\end{itemize}
+
+En particular, consideramos relevante las versiones expuestas en \ref{secc:impl}.
+
+\subsection{Implementación}
+\label{secc:impl}
+
+Como primer paso, se pueden generar dos versiones distintas del programa, variando la implementación de la siguiente
+función:
+\begin{small}
+\begin{verbatim}
+void*
+paint(void *artist_ant, void *gridfn, colour_fn next_colour, 
+    rule_fn next_rotation, uint64_t iterations);
+\end{verbatim}
+\end{small}
+
+Se presume que la versión base demora mas tiempo en ejecutar que la alternativa -compilada con la opción 
+\texttt{USE\_TABLES}- puede completar la cantidad especificada de iteraciones en menos tiempo.  Para comprobar si esta 
+afirmación es cierta, utilizaremos las herramientas \texttt{time} y \texttt{gprof}.
+
+\subsection{Ejemplos}
+
+Listamos las opciones utilizando el comando \texttt{--help}
+\begin{verbatim}
+./tp0_if --help
+  ./tp0_if -g <grid_spec> -p <colour_spec> -r <rule_spec> -t <n>
+  -g --grid: wxh
+  -p --palette: Combination of RGBYNW
+  -r --rules: Combination of LR
+  -t --times: Iterations. If negative, it's complement will be used.
+  -o --outfile: output file. Defaults to stdout.
+  -h --help: Print this message and exit
+  -v --verbose: Version number
+
+Compile with -DSANITY_CHECK to enable runtime checks
+Compile with -DUSE_TABLES to execute ant operations in separate functions
+Compile with -DUSE_COL_MAJOR to traverse the grid in column-major order
+\end{verbatim}
+
+Medimos el tiempo en ejecutar diez mil operaciones en la menor grilla posible, y repetimos escalando la cantidad
+de operaciones
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t ((10 * 1000))  > /dev/null
+real 0.10
+user 0.06
+sys 0.02
+\end{verbatim}
+
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t $((100 * 1000))  > /dev/null
+real 0.18
+user 0.15
+sys 0.02
+\end{verbatim}
+
+\begin{verbatim}
+time -p ./tp0_if -g 1x1 -p RGBW -r LLLL -t $((1000 * 1000))  > /dev/null
+real 1.41
+user 1.20
+sys 0.01
+\end{verbatim}
+
+Repetimos, con una grilla significativamente mas grande
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((10 * 1000))  > /dev/null
+
+real	0m3.611s
+user	0m3.072s
+sys	0m0.032s
+\end{verbatim}
+
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((100 * 1000))  > /dev/null
+
+real	0m3.178s
+user	0m2.784s
+sys	0m0.012s
+\end{verbatim}
+
+\begin{verbatim}
+time ./tp0_if -g 1024x1024 -p RGBW -r LLLL -t $((1000 * 1000))  > /dev/null
+
+real	0m3.414s
+user	0m2.976s
+sys	0m0.028s
+\end{verbatim}
+
+\section{Objetivos}
+Tal como se menciona arriba, se disponen de dos implementaciones de la versión \texttt{paint}. 
+El objetivo del trabajo práctico estudiar cuál es el máximo \SU posible al optimizar dicha función, para después  
+luego contrastar esta hipótesis con las mediciones realizadas sobre la nueva implementación.
+
+Se espera que los siguientes puntos estén incluidos en el análisis del problema
+\begin{itemize}
+\item ¿Cómo varía el tiempo de ejecución a medida que se cambian los parámetros del programa?
+\item ¿Durante qué proporción de tiempo se puede aplicar la mejora?
+\item ¿Cuál es el máximo \SU posible?
+\item Análisis realizado con \texttt{gprof}
+\item Mediciones relevantes realizadas con \texttt{time}
+\item Comparaciones del tiempo de ejecución con distintos parámetros
+\item Cálculo del \SU global y local
+\end{itemize}
+
+\pagebreak
+\section{Recursos}\label{Recursos}
+
+\begin{itemize}
+\item Hormiga de Langton: \url{https://es.wikipedia.org/wiki/Hormiga_de_Langton}
+\item Formato PPM: \url{http://netpbm.sourceforge.net/doc/ppm.html}
+\item Imagemagick \url{https://imagemagick.org/index.php}
+\item GProf guía rápida \url{https://web.eecs.umich.edu/~sugih/pointers/gprof_quick.html}
+\item Manual gprof \url{https://linux.die.net/man/1/gprof}
+\end{itemize}
+
+\section{Condiciones de entrega}
+
+\subsection{Fechas de entrega}
+\begin{itemize}
+\item 5/9/2019
+\item 19/9/2019
+\end{itemize}
+
+\begin{itemize}
+\item Carátula especificando los datos y contacto de los integrantes del grupo (dirección de correo electrónico, 
+\textit{handle} de slack, ubicación del repositorio de código)
+\item Decisiones relevantes sobre la implementación y resolución
+\item Conclusiones con \underline{fundamentos reales}
+\item Casos de prueba documentados
+\item Código fuente, si aplica
+\item Este enunciado
+\end{itemize}
+\end{document}

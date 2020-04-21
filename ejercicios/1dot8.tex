@@ -19,11 +19,11 @@ flotante por hardware. Cuando se combina el procesador y el coprocesador resulta
 
 Sea:
 \begin{itemize}
- \item I: Número de instrucciones de enteros ejecutadas en el \BMRK.
- \item F: Número de instrucciones de punto flotante ejecutadas en el \BMRK.
- \item Y: Número de instrucciones de entero para emular las instrucciones de punto flotante.
- \item W: Tiempo de ejecución del \BMRK en el procesador solo.
- \item B: Tiempo de ejecución del \BMRK en la combinación procesador/coprocesador.
+ \item I: Número de instrucciones de enteros ejecutadas en el \BMRK
+ \item F: Número de instrucciones de punto flotante ejecutadas en el \BMRK
+ \item Y: Número de instrucciones de entero para emular las instrucciones de punto flotante
+ \item W: Tiempo de ejecución del \BMRK en el procesador solo
+ \item B: Tiempo de ejecución del \BMRK en la combinación procesador/coprocesador
 \end{itemize}
 \end{footnotesize}
 \end{frame}
@@ -33,14 +33,16 @@ Sea:
 Escribir una expresión para calcular la tasa de MIPS en cada configuración utilizando los símbolos anteriores.
 }
 
-MIPS: Millón  de instrucciones ejecutadas por segundo
-
+MIPS: Millón  de instrucciones ejecutadas por segundo \\
+\medskip
 \begin{equation}\label{eqA}
 \setlength{\jot}{10pt}
 \begin{split}
 MIPS &= \frac{IC}{T_{ex} \times 10^{6}} \\
+\intertext{Sea $MIPS_{e}$ la tasa de MIPS al utilizar el procesador embebido, y $MIPS_{c}$ la tasa de mips al utilizar
+el coprocesador}.
 MIPS_{e} &= \frac{I + F \times Y}{W \times 10^6} \\
-MIPS_{b} &= \frac{I + F}{B \times 10^6}
+MIPS_{c} &= \frac{I + F}{B \times 10^6}
 \end{split}
 \end{equation}
 \end{frame}
@@ -111,6 +113,32 @@ de tiempo durante la cuál se ejecutan instrucciones enteras, siendo $B_{enteras
 \begin{displaymath}
 MFLOPS = \frac{F}{B \times (1 - \sfrac{I}{(I + F)}) \times 10^6} = \frac {I + F}{B \times 10^6}  = 80
 \end{displaymath}
+\end{frame}
+
+\begin{frame}
+\frametitle{Un colega quiere comprar el coprocesador a pesar que tiene una tasa de MIPS inferior al uso del procesador
+unicamente ¿Tiene razón? Justificar la respuesta}
+
+Si, tiene razón.\\
+\medskip
+La métrica que determina el desempeño de un sistema es el tiempo de ejecución. Si comparamos el tiempo de ejecutar
+el benchmark al utilizar el coprocesador ($B$) con respecto a simular a través de operaciones enteras ($W$), el 
+\textit{Speed up} obtenido es de aproximadamente $3.6$
+
+\bigskip
+Entonces, ¿Qué significa que $MIPS_{e}$ sea mayor que $MIPS_{c}$
+\end{frame}
+
+\begin{frame}
+
+La ejecución en ambos sistemas no es equivalente. La versión que carece del coprocesador debe ejecutar un número extra
+de instrucciones por cada instrucción de punto flotante ($Y$).\\ 
+\medskip
+Esta cantidad desproporcionada de instrucciones destinadas a la emulación de punto flotante es lo que causa que 
+$MIPS_{e}$ sea mayor que $MIPS_{c}$\\
+\medskip
+En definitiva, la ejecución de un número mucho mayor de instrucciones incrementa el tiempo de ejecución junto con
+la tasa de MIPS: $IC_{e} >> IC_{c} $
 \end{frame}
 %
 \end{document}

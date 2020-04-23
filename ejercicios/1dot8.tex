@@ -4,6 +4,7 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \newcommand{\BMRK}{\textit{benchmark }}
+
 \begin{document}
 \beamertemplatenavigationsymbolsempty
 \begin{frame}
@@ -40,7 +41,7 @@ MIPS: Millón  de instrucciones ejecutadas por segundo \\
 \begin{split}
 MIPS &= \frac{IC}{T_{ex} \times 10^{6}} \\
 \intertext{Sea $MIPS_{e}$ la tasa de MIPS al utilizar el procesador embebido, y $MIPS_{c}$ la tasa de mips al utilizar
-el coprocesador}.
+el coprocesador.}
 MIPS_{e} &= \frac{I + F \times Y}{W \times 10^6} \\
 MIPS_{c} &= \frac{I + F}{B \times 10^6}
 \end{split}
@@ -48,7 +49,7 @@ MIPS_{c} &= \frac{I + F}{B \times 10^6}
 \end{frame}
 
 \begin{frame}
-\frametitle{Para la configuración sin coprocesador, se obtuvo $F$, $Y$ y $W$. Encontrary I, B}
+\frametitle{Para la configuración sin coprocesador, se obtuvo $F$, $Y$ y $W$. Encontrar I, B}
 
 Sean $F= 8 \times 10^6$, $Y=50$, $W=4$ segundos,
 
@@ -78,32 +79,61 @@ $MFLOPS = \frac{IC_{fp}}{T_{ex\_fp} \times 10^6}$ \\
 \medskip
 El tiempo $W$ indica el tiempo de ejecución \underline{total}, compuesto por la ejecución de instrucciones enteras 
 y de punto flotante emuladas. El tiempo $T_{ex\_enteras}$ es igual en ambos casos\\
-$W = T_{ex\_fp} + T_{ex\_entera}$ \\
-$B = T_{ex\_emul\_fp} + T_{ex\_enteras}$\\
-Gráficamente 
-
 \bigskip
+$W \footnotemark= T_{ex\_emul\_fp} + T_{ex\_enteras}$ \\
+$B = T_{ex\_fp} + T_{ex\_entera}$ \\
+%oc
+\footnotetext[1]{Notar que el CPI de \underline{todas} las instrucciones ejecutadas en el primer caso ($IC_{e}$) es igual. 
+Esto no se cumple en el segundo caso.}
+\end{frame}
 %
 
+\begin{frame}
+\frametitle{Gráficamente}
 \tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1, baseline=(XXXX.south) ]
+% Text Node
+\draw (50,0) node [anchor=north west][inner sep=0.25pt]   [align=left] {$\displaystyle \footnotesize \underbrace{W\ *\ I\ /\ (I\ +\ F\ *\ Y)}$};
+% Text Node
+\draw (250,0) node [anchor=north west][inner sep=0.25pt]   [align=left] {$\displaystyle \footnotesize \underbrace{W\ *\ (F\ *\ Y)\ /\ ( I\ +\ F\ *\ Y)}$};
+%
+%
 \path (0,109);\path (483,0);\draw    ($(current bounding box.center)+(0,0.3em)$) node [anchor=south] (XXXX) {};
-%Shape: Rectangle [id:dp446170275508015] 
-\draw   (43,20) -- (204.5,20) -- (204.5,60) -- (43,60) -- cycle ;
-%Shape: Rectangle [id:dp30899223371026585] 
-\draw   (205.5,20) -- (442,20) -- (442,60) -- (205.5,60) -- cycle ;
+% Shape: Instrucciones enteras
+\draw[blue,thick]   (40,40) -- (200,40) -- (200,80) -- (40,80) -- cycle ;
+%Shape: Instrucciones emuladas fp
+\draw   (201,40) -- (440,40) -- (440,80) -- (201,80) -- cycle ;
+%
 % Text Node
-\draw (261,33) node [anchor=north west][inner sep=0.5pt]   [align=left] {{\tiny T. Instrucciones enteras}};
+\draw (75,52) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\tiny T. Instrucciones Enteras}};
 % Text Node
-\draw (75,32) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\tiny T. Instrucciones emulación FP}};
+\draw (261,52) node [anchor=north west][inner sep=0.5pt]   [align=left] {{\tiny T. Instrucciones emulación FP}};
 % Text Node
-\draw (2,29) node [anchor=north west][inner sep=0.75pt]   [align=left] {W};
-% Text Node
-\draw (35,72) node [anchor=north west][inner sep=0.25pt]   [align=left] {$\displaystyle \footnotesize \overbrace{W\ *\ I\ /\ (I\ +\ F\ *\ Y)}$};
-% Text Node
-\draw (250,72) node [anchor=north west][inner sep=0.25pt]   [align=left] {$\displaystyle \footnotesize \overbrace{W\ *\ (F\ *\ Y)\ /\ ( I\ +\ F\ *\ Y)}$};
-\end{tikzpicture}
+\draw (2,52) node [anchor=north west][inner sep=0.75pt]   [align=left] {W};
 
+%
+%
+%
+\path (0,309);\path (483,200);\draw    ($(current bounding box.center)+(0,0.3em)$) node [anchor=south] (XXXX) {};
+%Shape Instrucciones enteras (B)
+\draw[blue, thick]   (40,120) -- (200,120) -- (200,160) -- (40,160) -- cycle ;
+%Shape Instrucciones FP (B)
+\draw   (201,120) -- (360,120) -- (360,160) -- (201,160) -- cycle ;
+
+%Add dotted lines
+\draw[dotted] (200,120) -- (200, 80) ;
+\draw[dotted] (360,120) -- (442, 80) ;
+%
+% Text Node
+\draw (75,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\tiny T. Instrucciones Enteras}};
+% Text Node
+\draw (261,132) node [anchor=north west][inner sep=0.5pt]   [align=left] {{\tiny T. Instrucciones FP}};
+
+% Text Node
+\draw (2,130) node [anchor=north west][inner sep=0.75pt]   [align=left] {B};
+% Text Node
+\draw (50,180) node [anchor=north west][inner sep=0.25pt]   [align=left] {$\displaystyle \footnotesize \overbrace{W\ *\ I\ /\ (I\ +\ F\ *\ Y)}$};
+\end{tikzpicture}
 %
 \end{frame}
 
@@ -126,10 +156,12 @@ Si, tiene razón.\\
 \medskip
 La métrica que determina el desempeño de un sistema es el tiempo de ejecución. Si comparamos el tiempo de ejecutar
 el benchmark al utilizar el coprocesador ($B$) con respecto a simular a través de operaciones enteras ($W$), el 
-\textit{Speed up} obtenido es de aproximadamente $3.6$
+\textit{Speed up} obtenido es de aproximadamente $3.6$\footnotemark
 
 \bigskip
 Entonces, ¿Qué significa que $MIPS_{e}$ sea mayor que $MIPS_{c}$
+%
+\footnotetext[1]{Validar utilizando la Ley de Amdahl}
 \end{frame}
 
 \begin{frame}

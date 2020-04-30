@@ -1,0 +1,40 @@
+\documentclass[a4paper]{article}
+
+\usepackage{listings}
+\usepackage{color}
+
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyfoot{} 
+\fancyfoot[R]{\thepage}
+\fancyhead[L]{6620 - Organización de Computadoras.}
+\title{Conjunto de Instrucciones MIPS}
+\date{}
+\begin{document}
+\maketitle
+\section{Ejercicio}
+Disponemos de una implementación suboptima de la función \texttt{atoi}:
+
+
+\lstinputlisting[language=C,basicstyle=\footnotesize]{code/atoi.c}
+
+\begin{enumerate}[a.]
+\item Describir el \textit{stack} de las funciones involucradas.
+\item Implementar en assembly MIPS 32.
+\end{enumerate}
+
+\end{document}

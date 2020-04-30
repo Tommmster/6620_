@@ -9,3 +9,4 @@ tmp/
 pdfs/
 
 qemu/
+.DS_Store

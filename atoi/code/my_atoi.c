@@ -21,6 +21,7 @@ my_atoi(char *s)
 #else 
 #include "loop_atoi/my_atoi.h"
 
+#ifndef USE_MIPS32
 int
 my_atoi(char *s)
 {
@@ -34,6 +35,9 @@ my_atoi(char *s)
       return atoi_loop(s);
   }
 }
+#else
+extern int my_atoi(char *);
+#endif /* USE_MIPS32 */ 
 #endif
 
 int my_atoi(char *);

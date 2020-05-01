@@ -1,8 +1,7 @@
 
 GCC_FLAGS = -g -O0 -mips32 -mlong32 
 
-
-all: rec_atoi rec_atoi_mips loop_atoi loop_atoi_mips
+all: rec_atoi rec_atoi_mips loop_atoi loop_atoi_mips loop_atoi_mips_wrapper
 
 build_rec_atoi_mips:
 	cd rec_atoi; make rec_atoi_mips
@@ -27,6 +26,9 @@ loop_atoi: build_loop_atoi my_atoi.c
 
 loop_atoi_mips: build_loop_atoi_mips my_atoi.c
 	gcc $(GCC_FLAGS) my_atoi.c loop_atoi/atoi_loop_mips.o -o latoi_mips
+
+loop_atoi_mips_wrapper: build_loop_atoi_mips my_atoi_mips_loop.S my_atoi.c
+	gcc $(GCC_FLAGS) -DUSE_MIPS32 my_atoi.c my_atoi_mips_loop.S loop_atoi/atoi_loop_mips.o -o latoi_mips_wrapper
 
 clean:
 	cd loop_atoi; make clean

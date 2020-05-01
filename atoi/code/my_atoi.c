@@ -1,27 +1,7 @@
 #include <stdio.h> 
-#include <ctype.h>
 
-int my_atoi(char *);
-
-#ifndef USE_MIPS32
-
-static int
-ratoi(int acc, char *e)
-{
-  unsigned int i;
-
-  if (! *e ){
-      return acc;
-  }
-  else {
-      /* go recursive */
-      i =  *e - '0';
-      return ratoi( acc * 10 + i, e + 1);
-  }
-}
-#else /* USE_MIPS32 */
-extern int ratoi(int, char*);
-#endif
+#ifdef USE_REC_ATOI
+#include "rec_atoi/my_atoi.h"
 
 int
 my_atoi(char *s)
@@ -38,9 +18,30 @@ my_atoi(char *s)
 }
 
 
+#else 
+#include "loop_atoi/my_atoi.h"
+
+int
+my_atoi(char *s)
+{
+  char *start_at;
+
+  if (*s == '-' || *s == '+') {
+      start_at = s + 1;
+      return (*s == '-' ? -1 : 1) * atoi_loop(start_at);
+  }
+  else {
+      return atoi_loop(s);
+  }
+}
+#endif
+
+int my_atoi(char *);
+
 int 
 main(void) 
 {
+    printf("my_atoi(''):  %d\n", my_atoi(""));
     printf("my_atoi('1'):  %d\n", my_atoi("1"));
     printf("my_atoi('+1'):  %d\n", my_atoi("+1"));
     printf("my_atoi('-9'): %d\n", my_atoi("-9"));

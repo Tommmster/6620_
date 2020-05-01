@@ -15,25 +15,27 @@ my_atoi:
     sw fp, 24(sp)
 
     move fp, sp
+
     sw a0, 40(fp)
 
-    /* *s == '-' || *s == '+' */
+    /* LTA */ 
     lw t0, 40(fp)
+    sw t0, 16(fp)
+
+    /* Just default to 1 */
+    li t0, 1
+    sw t0, 20(fp)
+
+    /* *s == '-' || *s == '+' */
+    lw t0, 16(fp)
     lbu t0, 0(t0)
     li t1, '-'
     beq t0, t1, L_SIGN
 
-    lw t0, 40(fp)
+    lw t0, 16(fp)
     lbu t0, 0(t0)
     li t1, '+'
     beq t0, t1, L_SIGN
-
-     /* No '+' nor '-' */
-    lw t0, 40(fp)
-    sw t0, 16(fp)
-   
-    li t0, 1
-    sw t0, 20(fp)
 
     b L_ATOI_LOOP
 

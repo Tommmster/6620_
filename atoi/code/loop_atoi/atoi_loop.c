@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 int my_atoi(char*);
-int atoi_loop(char *, int);
+int atoi_loop(char *);
 
 #ifndef USE_MIPS32
 int
-atoi_loop(char *p, int sign)
+atoi_loop(char *p)
 {
     int num = 0;
 
@@ -15,21 +15,21 @@ atoi_loop(char *p, int sign)
         p ++;
     }
 
-    return sign * num;
+    return  num;
 }
 
 #else /* USE_MIPS32 */
-extern int atoi_loop(char *, int);
+extern int atoi_loop(char *);
 #endif 
 
 int
 my_atoi(char *p)
 {
-    if (p[0] == '-') {
-        return atoi_loop(p + 1, -1);
+    if (*p == '-' || *p == '+') {
+        return (*p == '-'? -1 : 1) *  atoi_loop(p + 1);
     } 
     else {
-        return atoi_loop(p, 1);
+        return atoi_loop(p);
     }
 }
 
@@ -37,6 +37,7 @@ int
 main(void) 
 {
     printf("my_atoi('1'):  %d\n", my_atoi("1"));
+    printf("my_atoi('+51'):  %d\n", my_atoi("+51"));
     printf("my_atoi('-9'): %d\n", my_atoi("-9"));
     printf("my_atoi('1521'): %d\n", my_atoi("1521"));
     printf("my_atoi('-3501'): %d\n", my_atoi("-3501"));

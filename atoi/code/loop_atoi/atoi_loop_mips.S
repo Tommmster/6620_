@@ -24,8 +24,8 @@ atoi_loop:
 L_LOOP:
     lw t0, 8(fp)
     lbu t1, 0(t0)
-
     beqz t1, L_RET
+    
     /* *p - '0' */
     lw t0, 8(fp)
     lbu t0, 0(t0)

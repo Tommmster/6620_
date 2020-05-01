@@ -7,9 +7,14 @@
 .globl ratoi
 .ent ratoi
 
+.set    noreorder
+.cpload t9
+.set reorder
+
 ratoi:
     subu sp, sp, 40
     /* SRA */
+    .cprestore 28 /* redundant */
     sw ra, 32(sp)
     sw gp, 28(sp)
     sw fp, 24(sp)

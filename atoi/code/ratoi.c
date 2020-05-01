@@ -6,10 +6,7 @@ ratoi(unsigned int acc, char *e, int sign)
   	return acc;
   }
   else {
-  	if (i < 9) {
-  		return acc;
-  	}
-  	else return ratoi( acc * 10 + i, e + 1);
+  	return ratoi( acc * 10 + i, e + 1, sign);
   }
 }
 

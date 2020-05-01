@@ -1,20 +1,19 @@
 #include <stdio.h> 
 
 int my_atoi(char *);
-#ifndef USE_MIPS32
 
+#ifndef USE_MIPS32
 static int
 ratoi(int acc, char *e, int sign)
 {
   unsigned int i;
 
-  if (! *e ){
+  if (! *e ) {
       return sign * acc;
   }
   else {
-      /* go recursive */
       i =  *e - '0';
-      return ratoi( acc * 10 + i, e + 1, sign);
+      return ratoi(acc * 10 + i, e + 1, sign);
   }
 }
 #else /* USE_MIPS32 */

@@ -8,6 +8,7 @@
 
 #ifndef USE_MIPS32
 int my_atoi(char *);
+
 int
 my_atoi(char *s)
 {
@@ -35,8 +36,6 @@ my_atoi(char *s)
 #else 
 extern int my_atoi(char *);
 #endif /* USE_MIPS32 */ 
-
-
 
 int 
 main(void) 

@@ -2,41 +2,41 @@
 
 #ifdef USE_REC_ATOI
 #include "rec_atoi/my_atoi.h"
-
-int
-my_atoi(char *s)
-{
-  char *start_at;
-
-  if (*s == '-' || *s == '+') {
-      start_at = s + 1;
-      return (*s == '-' ? -1 : 1) * ratoi(0 , start_at);
-  }
-  else {
-      return ratoi(0, s);
-  }
-}
-
-
 #else 
 #include "loop_atoi/my_atoi.h"
+#endif 
 
+#ifndef USE_MIPS32
+int my_atoi(char *);
 int
 my_atoi(char *s)
 {
   char *start_at;
+  int n;
 
   if (*s == '-' || *s == '+') {
       start_at = s + 1;
-      return (*s == '-' ? -1 : 1) * atoi_loop(start_at);
+      #ifndef USE_REC_ATOI
+      n = atoi_loop(start_at);
+      #else
+      n = ratoi(0, start_at);
+      #endif
+
+      return (*s == '-' ? -1 : 1) * n;
   }
   else {
+      #ifndef USE_REC_ATOI
       return atoi_loop(s);
+      #else
+      return ratoi(0, s);
+      #endif
   }
 }
-#endif
+#else 
+extern int my_atoi(char *);
+#endif /* USE_MIPS32 */ 
 
-int my_atoi(char *);
+
 
 int 
 main(void) 

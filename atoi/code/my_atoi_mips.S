@@ -9,8 +9,9 @@
 #define O_FP 24
 
 /* LTA Offsets */
-#define LTA_S 16
 #define LTA_SGN 20
+#define LTA_S 16
+
 
 .text
 .align 2

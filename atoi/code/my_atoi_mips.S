@@ -7,7 +7,6 @@
 #define O_RA 32
 #define O_GP 28 
 #define O_FP 24
-#define O_RA 32
 
 /* LTA Offsets */
 #define LTA_S 16

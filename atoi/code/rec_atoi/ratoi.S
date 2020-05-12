@@ -3,7 +3,9 @@
 .text
 .align 2
 
-/* int ratoi(int acc, char* e) */
+/* 
+ int ratoi(int acc, char* e) 
+*/
 .globl ratoi
 .ent ratoi
 
@@ -30,8 +32,7 @@ ratoi:
     lbu t0, 0(t0)
     bnez t0, L_else
 
-    lw v0, 40(fp) /* ret acc */
-
+    lw v0, 40(fp) /* return acc */
     b L_RET
 
 L_else:

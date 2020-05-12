@@ -1,5 +1,4 @@
 #include<sys/regdef.h>
-
 #define SS 24
 
 #define O_GP 20
@@ -11,10 +10,16 @@
 
 #define O_A0 (SS)
 #define O_A1 (O_A0 + 4)
-#define O_A2 (0_A1 + 4)
+#define O_A2 (O_A1 + 4)
 
 .text
 .align 2
+
+
+/*
+size_t
+strlcpy(char *dst, const char *src, size_t siz)
+*/ 
 
 .globl strlcpy
 .ent strlcpy
@@ -31,12 +36,12 @@ strlcpy:
 
 
     /* Local and temporary area */
-    /* *d = *dst */
+    /* d = dst */
 
     lw t0, O_A0(fp)
     sw t0, O_LTA_D(fp)
 
-    /* *s = *src */
+    /* s = src */
     lw t0, O_A1(fp)
     sw t0, O_LTA_S(fp)
     
@@ -61,3 +66,5 @@ strlcpy:
 
     jr ra
 .end strlcpy
+
+/* compile with gcc -mips32 -mlong32 -mabi=32 -c strlcpy.S */

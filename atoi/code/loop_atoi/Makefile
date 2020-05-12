@@ -1,4 +1,4 @@
-GCC_FLAGS = -O0 -mips32 -mlong32 -g -c
+GCC_FLAGS = -O0 -mips32 -mlong32 -mabi=32 -g -c 
 
 
 atoi_loop_mips: atoi_loop_mips.S

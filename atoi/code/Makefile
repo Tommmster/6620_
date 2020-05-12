@@ -1,5 +1,5 @@
 
-GCC_FLAGS = -g -O0 -mips32 -mlong32 
+GCC_FLAGS = -g -O0 -mips32 -mlong32 -mabi=32
 
 all: rec_atoi rec_atoi_mips loop_atoi loop_atoi_mips atoi_mips_loop_wrapper atoi_mips_rec_wrapper
 

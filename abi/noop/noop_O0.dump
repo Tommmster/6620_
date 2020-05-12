@@ -1,0 +1,43 @@
+
+noop.o:     file format elf32-tradbigmips
+
+
+Disassembly of section .text:
+
+00000000 <noop0>:
+   0:	27bdfff8 	addiu	sp,sp,-8
+   4:	afbe0004 	sw	s8,4(sp)
+   8:	03a0f025 	move	s8,sp
+   c:	00000000 	nop
+  10:	03c0e825 	move	sp,s8
+  14:	8fbe0004 	lw	s8,4(sp)
+  18:	27bd0008 	addiu	sp,sp,8
+  1c:	03e00008 	jr	ra
+  20:	00000000 	nop
+
+00000024 <noop1>:
+  24:	27bdfff8 	addiu	sp,sp,-8
+  28:	afbe0004 	sw	s8,4(sp)
+  2c:	03a0f025 	move	s8,sp
+  30:	afc40008 	sw	a0,8(s8)
+  34:	00000000 	nop
+  38:	03c0e825 	move	sp,s8
+  3c:	8fbe0004 	lw	s8,4(sp)
+  40:	27bd0008 	addiu	sp,sp,8
+  44:	03e00008 	jr	ra
+  48:	00000000 	nop
+
+0000004c <noop2>:
+  4c:	27bdfff8 	addiu	sp,sp,-8
+  50:	afbe0004 	sw	s8,4(sp)
+  54:	03a0f025 	move	s8,sp
+  58:	afc40008 	sw	a0,8(s8)
+  5c:	afc5000c 	sw	a1,12(s8)
+  60:	afc60010 	sw	a2,16(s8)
+  64:	afc70014 	sw	a3,20(s8)
+  68:	00000000 	nop
+  6c:	03c0e825 	move	sp,s8
+  70:	8fbe0004 	lw	s8,4(sp)
+  74:	27bd0008 	addiu	sp,sp,8
+  78:	03e00008 	jr	ra
+  7c:	00000000 	nop

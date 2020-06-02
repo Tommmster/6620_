@@ -185,7 +185,7 @@ La figura \ref{ref::trad-no-tlb} busca ilustrar el proceso de traducción
 Valen algunas aclaraciones:
 \begin{itemize}
 \item La tabla de páginas invertida contiene una entrada por cada marco de página en memoria física (i.e Cantida de páginas de 4 KiB que entran en memoria). En este caso cada entrada (\textit{PTE}) debe contener: 1. El número de página virtual que se busca traducir. 2. Metadatos sobre la página (bits \texttt{V}, \texttt{D},\texttt{R}, \texttt{X}, etc). 3. El número de entrada siguiente en caso de que el \texttt{VPN} contenido no sea el buscado, o un indicador de que la entrada es la última en la cadena.
-\item La cantidad de entradas en la \texttt{HAT} depende de la cantidad de resultados de la función de \textit{hash}.
+\item La cantidad de entradas en la \texttt{HAT} se puede extender para acortar cadenas de colisiones
 \item En esta implementación de la tabla invertida, el PPN \underline{no está contenido en la entrada}
 \item No se incluye en el diagrama, pero se requiere una estructura adicional para conocer la ubicación de las páginas que no están alojadas en memoria principal
 \item No se incluye en el diagrama, pero el identificador de espacio de direcciones (\texttt{ASID}) se concatena al campo \texttt{VPN} al principio del proceso de traducción.  

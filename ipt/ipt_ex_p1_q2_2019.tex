@@ -1,0 +1,287 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{siunitx}
+\usepackage{tikz}
+
+\addtolength{\hoffset}{-2.0cm}
+\addtolength{\voffset}{-1.5cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23.5cm}
+
+\begin{document}
+\pagestyle{fancyplain}
+
+\lhead{Organización de Computadoras - 66:20\\
+Parcial 24/10, $2^{do}$ cuatrimestre de 2019}
+\rhead{página \thepage/\pageref{LastPage}}
+\lfoot{{\footnotesize 2019/10/24}}
+\cfoot{}
+\rfoot{}
+
+
+\section{Enunciado}
+Se dispone de una computadora con 16MiB de memoria. El soporte para memoria virtual se implementa mediante una tabla de páginas invertida, asistida por una \texttt{HAT} y tamaño de página de  4KiB. El proceso de traducción de memoria solo considera los 24 bits menos significativos de la dirección.
+
+\begin{enumerate}
+    \item Indique cómo se utiliza la ubicación virtual para obtener la dirección física.
+    \item ¿Cuántas entradas tiene la Tabla de páginas? Describa el contenido de una entrada.
+    \item Si se dispone de la siguiente función de hash \texttt{h = (va $>>$ OFFSET\_BITS) \& 0x3}. ¿Cuál es la \underline{máxima} cantidad de accesos posibles para traducir una dirección? Describa como se puede producir un fallo de página en este modelo.
+    \item Se dispone de un TLB asociativo de 4 entradas. Traduzca las siguientes direcciones virtuales.
+    
+    \begin{itemize}
+        \item \texttt{0x00078A}
+        \item \texttt{0x0501AB}
+        \item \texttt{0x0FF001}
+    \end{itemize}
+    
+    Contenido del TLB:
+    \begin{center}
+    \begin{tabular}{|c|c|}
+    \hline
+        VPN & PPN   \\
+        \hline
+        0x0CA & 0x00E \\
+        0x000 & 0x0A0 \\
+        0x0FF & 0x055 \\
+        0x0DE & 0x042 \\
+        \hline
+    \end{tabular}
+    \end{center}
+\end{enumerate}
+
+
+
+\pagebreak
+\section{Resolución}
+
+La dirección virtual se divide en dos campos: \texttt{VPN} y \texttt{OFFSET}.
+La cantidad de bits para el campo \texttt{OFFSET} está determinado por el tamaño de página. En este caso es de 12 bits, ya que la página es de 4 KiB. Los bits restantes son utilizados para el campo \texttt{VPN}, que indica la cantidad de páginas en las que se divide el espacio virtual.
+
+\begin{figure}[!h]
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\centering
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,78); %set diagram left start at 0, and has height of 78
+
+%Shape: Rectangle [id:dp13083122368671551] 
+\draw   (189,7) -- (366,7) -- (366,47) -- (189,47) -- cycle ;
+%Shape: Rectangle [id:dp4516908703522018] 
+\draw   (12,7) -- (189,7) -- (189,47) -- (12,47) -- cycle ;
+
+% Text Node
+\draw (73,19) node [anchor=north west][inner sep=0.75pt]   [align=left] {VPN};
+% Text Node
+\draw (248,19) node [anchor=north west][inner sep=0.75pt]   [align=left] {OFFSET};
+% Text Node
+\draw (14,50) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\scriptsize 23}};
+% Text Node
+\draw (368,50) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\scriptsize 0}};
+% Text Node
+\draw (191,50) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\scriptsize 11}};
+
+\end{tikzpicture}
+\caption{\label{ref::dir-fields} División de una dirección virtual}
+\end{figure}
+
+La figura \ref{ref::trad-no-tlb} busca ilustrar el proceso de traducción
+\begin{figure}[!ht]
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,490); %set diagram left start at 0, and has height of 490
+
+%Shape: Rectangle [id:dp19599428141345943] 
+\draw   (370.5,57) -- (458,57) -- (458,243) -- (370.5,243) -- cycle ;
+%Shape: Rectangle [id:dp7399009317326432] 
+\draw  [color={rgb, 255:red, 155; green, 155; blue, 155 }  ,draw opacity=1 ][fill={rgb, 255:red, 155; green, 155; blue, 155 }  ,fill opacity=1 ] (369.5,94) -- (456.5,94) -- (456.5,134) -- (369.5,134) -- cycle ;
+%Shape: Rectangle [id:dp10522735811822792] 
+\draw   (197,27) -- (276.5,27) -- (276.5,257) -- (197,257) -- cycle ;
+%Straight Lines [id:da054222615408757724] 
+\draw    (287.5,181) -- (355.53,118.35) ;
+\draw [shift={(357,117)}, rotate = 497.36] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp09237671123962132] 
+\draw  [fill={rgb, 255:red, 65; green, 195; blue, 245 }  ,fill opacity=1 ] (197,170) -- (277,170) -- (277,207) -- (197,207) -- cycle ;
+%Shape: Rectangle [id:dp8630276207323418] 
+\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=0 ][fill={rgb, 255:red, 184; green, 233; blue, 134 }  ,fill opacity=1 ] (371,167) -- (458,167) -- (458,207) -- (371,207) -- cycle ;
+%Curve Lines [id:da9903872210729384] 
+\draw    (472.5,88) .. controls (512.3,58.15) and (551.11,146.11) .. (472.69,188.37) ;
+\draw [shift={(471.5,189)}, rotate = 332.3] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Circle [id:dp5228669168499337] 
+\draw   (106.5,156.25) .. controls (106.5,144.24) and (116.24,134.5) .. (128.25,134.5) .. controls (140.26,134.5) and (150,144.24) .. (150,156.25) .. controls (150,168.26) and (140.26,178) .. (128.25,178) .. controls (116.24,178) and (106.5,168.26) .. (106.5,156.25) -- cycle ;
+%Straight Lines [id:da43533547990555654] 
+\draw    (157.5,163) -- (188.23,179.07) ;
+\draw [shift={(190,180)}, rotate = 207.61] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp34067333762328444] 
+\draw  [dash pattern={on 0.84pt off 2.51pt}] (80,2) -- (520,2) -- (520,320) -- (80,320) -- cycle ;
+%Shape: Rectangle [id:dp11084294053983812] 
+\draw  [color={rgb, 255:red, 126; green, 211; blue, 33 }  ,draw opacity=1 ][fill={rgb, 255:red, 184; green, 233; blue, 134 }  ,fill opacity=1 ] (4,140) -- (70,140) -- (70,180) -- (4,180) -- cycle ;
+%Shape: Rectangle [id:dp08284087543125707] 
+\draw   (565,153) -- (635,153) -- (635,188) -- (565,188) -- cycle ;
+%Straight Lines [id:da8454457220164067] 
+\draw    (70,160) -- (104.51,156.45) ;
+\draw [shift={(106.5,156.25)}, rotate = 534.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+\draw   (587,206.5) .. controls (587,201.81) and (591.48,198) .. (597,198) .. controls (602.52,198) and (607,201.81) .. (607,206.5) .. controls (607,211.19) and (602.52,215) .. (597,215) .. controls (591.48,215) and (587,211.19) .. (587,206.5) -- cycle ; \draw   (587,206.5) -- (607,206.5) ; \draw   (597,198) -- (597,215) ;
+%Straight Lines [id:da7414458800750201] 
+\draw    (585,308) -- (585,280) ;
+\draw [shift={(585,278)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da4165466172510084] 
+\draw    (525,188) -- (557,188) ;
+\draw [shift={(559,188)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da03692689132618776] 
+\draw    (30,259) -- (30,318) ;
+\draw [shift={(30,320)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp9326574617995733] 
+\draw   (565,228) -- (635,228) -- (635,263) -- (565,263) -- cycle ;
+%Shape: Rectangle [id:dp08851159119523488] 
+\draw   (3,203) -- (69,203) -- (69,243) -- (3,243) -- cycle ;
+
+% Text Node
+\draw (406,247) node [anchor=north west][inner sep=0.75pt]   [align=left] {IPT};
+% Text Node
+\draw (218,269) node [anchor=north west][inner sep=0.75pt]   [align=left] {HAT};
+% Text Node
+\draw (21,151) node [anchor=north west][inner sep=0.75pt]   [align=left] {VPN {\footnotesize z}};
+% Text Node
+\draw (101,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {\textit{hash(vpn)}};
+% Text Node
+\draw (409,139) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+% Text Node
+\draw (582,159) node [anchor=north west][inner sep=0.75pt]   [align=left] {PFN};
+% Text Node
+\draw (11,212) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\small OFFSET}};
+% Text Node
+\draw (571,232) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\small OFFSET}};
+% Text Node
+\draw (121,112) node [anchor=north west][inner sep=0.75pt]   [align=left] {\textbf{{\footnotesize 1}}};
+% Text Node
+\draw (281,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {\textbf{{\footnotesize 2}}};
+% Text Node
+\draw (460,60) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize \textbf{3}}};
+% Text Node
+\draw (473.5,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize \textbf{4}}};
+% Text Node
+\draw (43,362) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize 1- El resultado de la función de hash marca una entrada en la HAT.}};
+% Text Node
+\draw (44,382) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize 2- La entrada en el HAT indica una entrada de la IPT en la cual el VPN comparte el hash.}};
+% Text Node
+\draw (45,401) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize 3- La VPN contenida en la entrada no es la que se busca traducir, se obtiene la siguiente entrada en la cadena.}};
+% Text Node
+\draw (48,422) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\footnotesize 4- La VPN contenida en la siguiente entrada es la que se busca traducir. El PFN es el índice de la entrada en la tabla }};
+% Text Node
+\draw (407,106) node [anchor=north west][inner sep=0.75pt]   [align=left] {VPN {\footnotesize a}};
+% Text Node
+\draw (407,176) node [anchor=north west][inner sep=0.75pt]   [align=left] {VPN {\footnotesize z}};
+
+
+\end{tikzpicture}
+Valen algunas aclaraciones:
+\begin{itemize}
+\item La tabla de páginas invertida contiene una entrada por cada marco de página en memoria física (i.e Cantida de páginas de 4 KiB que entran en memoria). En este caso cada entrada (\textit{PTE}) debe contener: 1. El número de página virtual que se busca traducir. 2. Metadatos sobre la página (bits \texttt{V}, \texttt{D},\texttt{R}, \texttt{X}, etc). 3. El número de entrada siguiente en caso de que el \texttt{VPN} contenido no sea el buscado, o un indicador de que la entrada es la última en la cadena.
+\item La cantidad de entradas en la \texttt{HAT} se puede extender para acortar cadenas de colisiones
+\item En esta implementación de la tabla invertida, el PPN \underline{no está contenido en la entrada}
+\item No se incluye en el diagrama, pero se requiere una estructura adicional para conocer la ubicación de las páginas que no están alojadas en memoria principal
+\item No se incluye en el diagrama, pero el identificador de espacio de direcciones (\texttt{ASID}) se concatena al campo \texttt{VPN} al principio del proceso de traducción.  
+\end{itemize}
+
+\caption{\label{ref::trad-no-tlb} Proceso de traducción, sin incluir el \texttt{TLB}}
+\end{figure}
+
+
+\subsection{Máxima cantidad de comparaciones}
+La función de hash especificada divide al espacio de \texttt{VPN}s en cuatro conjuntos, según sus dos bits menos significativos. Un primer intento para encontrar la máxima cantidad de comparaciones puede suponer un patrón de acceso secuencial al espacio de direcciones virtualeshasta completar todas las entradas de la tabla invertida. 
+Por ejemplo, 
+0x0, 0x1000, 0x2000, 0x3000, ...., 0x3FF000 \footnote{Accesos espaciados en 4KiB}
+
+En este caso, el máximo número de comparaciones equivale a un cuarto de la cantidad de entradas.
+
+Sin embargo, se puede encontrar un patrón de acceso patológico en el que se acceda únicamente a direcciones para los cuales la función de hash retorne siempre el mismo valor \footnote {Accesos espaciados en 16KiB, por ejemplo 0x0, 0x4000, 0x8000, 0xC000, 0x10000 ... }, lo que arrojaría un número de comparaciones igual a la cantidad de entradas en la tabla.
+
+\subsection{Traducción de direcciones}
+Para realizar las traducciones, solo disponemos de la información presente en el TLB \footnote{Suponemos una política de reemplazos que no descarte información necesaria}. En el caso de no encontrar el VPN correspondiente, entonces el evento se marca como \textit{TLB MISS} y se provee la información disponible.
+
+
+\begin{figure}[!h]
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,339); %set diagram left start at 0, and has height of 339
+
+%Shape: Rectangle [id:dp19599428141345943] 
+\draw   (450,90) -- (508,90) -- (508,243) -- (450,243) -- cycle ;
+%Shape: Rectangle [id:dp10522735811822792] 
+\draw   (341,27) -- (420.5,27) -- (420.5,257) -- (341,257) -- cycle ;
+%Shape: Circle [id:dp5228669168499337] 
+\draw   (266.5,158.25) .. controls (266.5,146.24) and (276.24,136.5) .. (288.25,136.5) .. controls (300.26,136.5) and (310,146.24) .. (310,158.25) .. controls (310,170.26) and (300.26,180) .. (288.25,180) .. controls (276.24,180) and (266.5,170.26) .. (266.5,158.25) -- cycle ;
+%Shape: Rectangle [id:dp34067333762328444] 
+\draw  [dash pattern={on 0.84pt off 2.51pt}] (240,2) -- (520,2) -- (520,320) -- (240,320) -- cycle ;
+%Shape: Rectangle [id:dp11084294053983812] 
+\draw  [color={rgb, 255:red, 126; green, 211; blue, 33 }  ,draw opacity=1 ][fill={rgb, 255:red, 184; green, 233; blue, 134 }  ,fill opacity=1 ] (4,140) -- (70,140) -- (70,180) -- (4,180) -- cycle ;
+%Shape: Rectangle [id:dp08284087543125707] 
+\draw   (565,153) -- (635,153) -- (635,188) -- (565,188) -- cycle ;
+\draw   (587,206.5) .. controls (587,201.81) and (591.48,198) .. (597,198) .. controls (602.52,198) and (607,201.81) .. (607,206.5) .. controls (607,211.19) and (602.52,215) .. (597,215) .. controls (591.48,215) and (587,211.19) .. (587,206.5) -- cycle ; \draw   (587,206.5) -- (607,206.5) ; \draw   (597,198) -- (597,215) ;
+%Straight Lines [id:da7414458800750201] 
+\draw    (585,308) -- (585,280) ;
+\draw [shift={(585,278)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da4165466172510084] 
+\draw    (525,188) -- (557,188) ;
+\draw [shift={(559,188)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da03692689132618776] 
+\draw    (30,259) -- (30,318) ;
+\draw [shift={(30,320)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp9326574617995733] 
+\draw   (565,228) -- (635,228) -- (635,263) -- (565,263) -- cycle ;
+%Shape: Rectangle [id:dp08851159119523488] 
+\draw   (3,203) -- (69,203) -- (69,243) -- (3,243) -- cycle ;
+%Shape: Rectangle [id:dp027743354201282378] 
+\draw  [fill={rgb, 255:red, 80; green, 227; blue, 194 }  ,fill opacity=1 ] (100,114) -- (180,114) -- (180,210) -- (100,210) -- cycle ;
+%Straight Lines [id:da5434068964874019] 
+\draw    (180,170) -- (238,170) ;
+\draw [shift={(240,170)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+% Text Node
+\draw (456,247) node [anchor=north west][inner sep=0.75pt]   [align=left] {IPT};
+% Text Node
+\draw (362,269) node [anchor=north west][inner sep=0.75pt]   [align=left] {HAT};
+% Text Node
+\draw (21,151) node [anchor=north west][inner sep=0.75pt]   [align=left] {VPN {\footnotesize z}};
+% Text Node
+\draw (264,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {\textit{{\scriptsize hash(vpn)}}};
+% Text Node
+\draw (582,159) node [anchor=north west][inner sep=0.75pt]   [align=left] {PFN};
+% Text Node
+\draw (11,212) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\small OFFSET}};
+% Text Node
+\draw (571,232) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\small OFFSET}};
+% Text Node
+\draw (121,221) node [anchor=north west][inner sep=0.75pt]   [align=left] {TLB};
+% Text Node
+\draw (183,151) node [anchor=north west][inner sep=0.75pt]   [align=left] {{\scriptsize TLB Miss}};
+\end{tikzpicture}
+\caption{\label{ref::trad-tlb} Proceso de traducción, incluyendo el \texttt{TLB}}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Dirección virtual & VPN & PPN (si aplica) & Dirección física \\
+\hline
+\texttt{0x00078A} &  \texttt{0x000} & \texttt{0x0A0}  & 0\texttt{x0A078A} \\
+\hline
+\texttt{0x0501AB} & \texttt{0x050} & \textit{TLB MISS} & \texttt{0x???1AB} \\
+\hline
+\texttt{0x0FF001} & \texttt{0x0FF} & \texttt{0x055} & \texttt{0x055001} \\
+\hline
+\end{tabular}
+\caption {\label {tab:tlb-trad} Traducciónes}
+\end{table}
+
+\end{document}

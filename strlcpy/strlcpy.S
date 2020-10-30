@@ -1,4 +1,5 @@
 #include<sys/regdef.h>
+
 #define SS 24
 
 #define O_GP 20
@@ -26,10 +27,13 @@ strlcpy(char *dst, const char *src, size_t siz)
 
 strlcpy:
     subu sp, sp, SS
+    
+    /* Saved Register Area */
     sw   gp, O_GP(sp)
     sw   fp, O_FP(sp)
     move fp, sp
 
+    /* Store in Argument Building Area */
     sw   a0, O_A0(fp)
     sw   a1, O_A1(fp)
     sw   a2, O_A2(fp)
@@ -37,7 +41,6 @@ strlcpy:
 
     /* Local and temporary area */
     /* d = dst */
-
     lw t0, O_A0(fp)
     sw t0, O_LTA_D(fp)
 

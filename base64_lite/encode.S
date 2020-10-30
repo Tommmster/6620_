@@ -23,10 +23,7 @@
 #define O_A0 (SS)
 #define O_A1 (SS + 4)
 
-.data
-.size alphabet, 64
-alphabet: .ascii  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-  
+ 
 .text
 .align 2
 /* 
@@ -93,7 +90,10 @@ encode:
   sw   t0, O_I4(fp) #i4
 
   la   v0, out
+  lw   v0, 0(v0)
+
   la   v1, alphabet
+  lw   v1, 0(v1)
 
   /* out[0] = alphabet[i1] */
   lw   t0, O_I1(fp)
@@ -129,3 +129,4 @@ return:
 
   jr ra
 .end encode
+ 

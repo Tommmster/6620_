@@ -1,13 +1,22 @@
 #include <sys/regdef.h>
 
-#define SS   40
+/* Stack size */
+#define SS 40
 
+/* Caller's ABA */
+#define O_A0 (SS)
+#define O_A1 (SS + 4)
 
 /* SRA */
 #define O_FP 36
 #define O_GP 32
 
-/* Local and temporary area */
+/* 
+Local and temporary area 
+Sin restricciones acerca del orden de las variables locales 
+y valores temporales en el stack
+*/
+
 /* Local */
 #define O_I1 28
 #define O_I2 24
@@ -20,9 +29,6 @@
 #define I3_1 4
 #define I3_2 0
 
-/* Caller's ABA */
-#define O_A0 (SS)
-#define O_A1 (SS + 4)
 
  
 .text

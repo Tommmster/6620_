@@ -1,13 +1,22 @@
 #include <sys/regdef.h>
 
-#define SS   40
+/* Stack size */
+#define SS 40
 
+/* Caller's ABA */
+#define O_A0 (SS)
+#define O_A1 (SS + 4)
 
 /* SRA */
 #define O_FP 36
 #define O_GP 32
 
-//LTA
+/* 
+Local and temporary area 
+Sin restricciones acerca del orden de las variables locales 
+y valores temporales en el stack
+*/
+
 /* Local */
 #define O_I1 28
 #define O_I2 24
@@ -20,8 +29,6 @@
 #define I3_1 4
 #define I3_2 0
 
-#define O_A0 (SS)
-#define O_A1 (SS + 4)
 
  
 .text
@@ -89,6 +96,12 @@ encode:
   andi t0, t0, 0x3F
   sw   t0, O_I4(fp) #i4
 
+  /* 
+  out y alphabet son dos variables globales. Usando la pseudo instrucción
+  la se carga la dirección de la etiqueta donde está definida, y mediante el
+  siguiente lw accedemos a la variable
+  */
+  
   la   v0, out
   lw   v0, 0(v0)
 
@@ -119,7 +132,7 @@ encode:
   lb   t1, 0(t1)
   sb   t1, 3(v0)
 
-return:
+return0:
   li v0, 0
 
   /* stack unwinding */

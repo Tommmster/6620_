@@ -37,13 +37,20 @@ Acerca de la ejecución programa, no se sabe en qué dirección de memoria se ca
 
 * En una segunda instancia, se conecta a una memoria con una latencia de 100ns (para accesos de hasta una palabra de 32 bits)
 
-* Finalmente, se agrega un _caché_ unificado, de mapeo directo, con 64 bytes de capacidad y 4 lineas. La política de escritura del _caché_ es WT / ~WA. La penalidad por transferir un bloque de memoria desde / hacia memoria _caché_ es de 115 ns.
+* Finalmente, se agrega un _caché_ unificado, de mapeo directo, con 64 bytes de capacidad y 4 lineas y determinar si un dato está o no almacenado en la memoria caché (Tiempo de hit) toma 1ns. La política de escritura del _caché_ es WT / ~WA. La penalidad por transferir un bloque de memoria desde / hacia memoria _caché_ es de 115 ns. En cada acceso a memoria el procesador se detiene hasta obtener el dato (o instrucción) 
 
-Para el caso 3)
-¿Cúal es la tasa de desaciertos (miss rate) del programa?
+
 ¿Cuántos bits se utilizan para los campos Offset, Index y Tag?
 
-Para cada caso 
+Para cada caso:
 ¿Cuál es el tiempo promedio de acceso a memoria?
 ¿Cuál es el Tiempo de ejecución (Tex) del programa?
+
+Para poder resolver el último caso  se deben responder las siguientes preguntas.
+¿Cúal es la tasa de desaciertos (miss rate) del programa?
+¿Qué efecto tienen las escrituras sobre el caché? 
+
+Bonus
+Para cada caso:
+¿Cuál sería el Speed Up global si se obtiene un Speed up local del 50%?
 

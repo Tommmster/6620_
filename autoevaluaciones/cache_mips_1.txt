@@ -1,1 +1,49 @@
 
+
+.data
+.align 4
+numbers: .word 0, 0, 0 ...
+
+.text
+.align 4
+
+  li  v0, 0   
+  li  a0, 200 
+  la  a1, numbers 
+
+_store: 
+  add v1, v0, a1 
+  sw  v0, 0(v1) 
+
+  addiu v0, v0, 4 
+    
+  sltu  v1, v0, a0 
+  bneq v1, zero, _store 
+
+
+Este programa se ejecuta en una computadora de 32 bits con un procesador de 1Ghz, del que se conoce el CPI promedio de cada tipo de instrucción 
+
+Instrucción  Ciclos
+ALU          1,0
+L/S          1,4 
+BC Tomado    2,0
+BC No tomado 1,5
+
+(Considerar la como 1 instrucción L/S + 1 instrucción ALU)
+
+Acerca de la ejecución programa, no se sabe en qué dirección de memoria se cargan los datos ni las instrucciones, pero se sabe que esa dirección es múltiplo de 16.
+
+* Inicialmente, el procesador se encuentra conectado a una memoria que tiene latencia de 0ns para cualquier acceso (i.e no demora al procesador).
+
+* En una segunda instancia, se conecta a una memoria con una latencia de 100ns (para accesos de hasta una palabra de 32 bits)
+
+* Finalmente, se agrega un _caché_ unificado, de mapeo directo, con 64 bytes de capacidad y 4 lineas. La política de escritura del _caché_ es WT / ~WA. La penalidad por transferir un bloque de memoria desde / hacia memoria _caché_ es de 115 ns.
+
+Para el caso 3)
+¿Cúal es la tasa de desaciertos (miss rate) del programa?
+¿Cuántos bits se utilizan para los campos Offset, Index y Tag?
+
+Para cada caso 
+¿Cuál es el tiempo promedio de acceso a memoria?
+¿Cuál es el Tiempo de ejecución (Tex) del programa?
+

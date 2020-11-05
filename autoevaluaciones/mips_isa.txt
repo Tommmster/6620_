@@ -1,0 +1,28 @@
+
+Considere el siguiente código assembly MIPS32
+
+.data
+.align 2
+numbers: .word 0, 0, 0 ...
+
+.text
+.align 2
+
+li    v0, 0   # I. 1
+li  a0, 200 # I.  1
+la  a1, numbers #I  1
+
+_store: 
+    add v1, v0, a1 # a1[v0] <- v0 50 
+    sw  v0, 0(v1) # I.  50
+
+    addiu v0, v0, 4 #I  50 
+    
+    sltu  v1, v0, a0 # v1 <- v0 < a0  50 
+    bneq v1, zero, _store #I.         50 
+
+¿Cuál es el valor de IC ?
+¿Cuál es el número total de instrucciones del tipo I ejecutadas?
+¿Cuál es el promedio de accesos a memoria por instrucción?
+
+# Respuestas 253, 50, (253 + 50) / 303

@@ -52,5 +52,5 @@ Para poder resolver el último caso  se deben responder las siguientes preguntas
 
 Bonus
 Para cada caso:
-¿Cuál sería el Speed Up global si se obtiene un Speed up local del 50%?
+¿Cuál sería el Speed Up global si se obtiene un Speed up local del 50% para el caso de las escrituras?
 
